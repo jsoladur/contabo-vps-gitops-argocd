@@ -62,6 +62,13 @@ spec:
                 secretKeyRef:
                   name: crypto-stop-loss-bot
                   key: bit2me.api.secret
+            - name: GEMINI_PRO_API_ENABLED
+              value: "true"
+            - name: GEMINI_PRO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: crypto-stop-loss-bot
+                  key: gemini.pro.api.key
           resources:
             requests:
               memory: "512Mi"
