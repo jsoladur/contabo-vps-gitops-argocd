@@ -54,7 +54,6 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="\
 --tls-san vps.jmsola.dev \
 --tls-san 207.180.239.230 \
 --write-kubeconfig-mode=644 \
---disable servicelb \
 --disable metrics-server \
 --kube-apiserver-arg event-ttl=1h \
 --kube-scheduler-arg leader-elect=false \
