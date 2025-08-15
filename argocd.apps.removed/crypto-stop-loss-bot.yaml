@@ -6,7 +6,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
     # Enable image updater for this application
-    argocd-image-updater.argoproj.io/enable: "true"
+    argocd-image-updater.argoproj.io/enable: "false"
     argocd-image-updater.argoproj.io/update-strategy: semver # to apply for all the images
     argocd-image-updater.argoproj.io/image-list: docker.io/josemariasoladuran/crypto-stop-loss-bot
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd-image-updater/github-creds
