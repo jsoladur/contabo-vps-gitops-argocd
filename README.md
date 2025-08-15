@@ -49,19 +49,17 @@ ssh root@vps.jmsola.dev
 ### 2. Install K3s (Lightweight Kubernetes)
 
 Install K3s with custom TLS SANs to support domain and IP access:
-
 ```bash
-curl -sfL https://get.k3s.io | \
-INSTALL_K3S_EXEC="\
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="\
 --tls-san vps.jmsola.dev \
 --tls-san 207.180.239.230 \
---kube-apiserver-arg=watch-cache-size=1000 \
---kube-controller-manager-arg=concurrent-deployment-syncs=2 \
---kube-controller-manager-arg=concurrent-job-syncs=2 \
---kube-scheduler-arg=leader-elect=false \
---disable=servicelb,metrics-server \
---flannel-backend=host-gw \
---write-kubeconfig-mode=644" sh -s -
+--write-kubeconfig-mode=644 \
+--disable servicelb \
+--disable metrics-server \
+--kube-apiserver-arg event-ttl=1h \
+--kube-scheduler-arg leader-elect=false \
+--kubelet-arg container-log-max-size=10Mi \
+--kubelet-arg container-log-max-files=3" sh -
 ```
 
 Open necessary ports for Kubernetes API and HTTP/HTTPS traffic:

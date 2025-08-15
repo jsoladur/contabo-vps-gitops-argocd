@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/name: crypto-stop-loss-bot
 spec: 
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app.kubernetes.io/name: crypto-stop-loss-bot
