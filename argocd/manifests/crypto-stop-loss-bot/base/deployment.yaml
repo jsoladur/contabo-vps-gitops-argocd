@@ -70,12 +70,11 @@ spec:
                   name: crypto-stop-loss-bot
                   key: gemini.pro.api.key
           resources:
-            requests:
-              memory: "512Mi"
-              cpu: "250m"
             limits:
-              cpu: "2"
-              memory: "2Gi"
+              memory: "4Gi"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
           readinessProbe:
             httpGet:
               path: /health/status
