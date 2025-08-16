@@ -112,6 +112,34 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
+Once ArgoCD has been installed, it is important to apply some tuning stuff in order to avoid heavy CPU usage that is mainly provoked by `ArgoCD` itself, since it uses Kubernetes API so much, which is traduced into a heavy `k3s-server` heavy CPU usage.
+
+To avoid it, exec
+
+```bash
+kubectl edit configmap argocd-cm -n argocd
+```
+
+Then, add under `data:` the following values: 
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  [...]
+  timeout.reconciliation: 15m
+  timeout.reconciliation.jitter: 60s
+```
+
+You should see at bash terminal something like: 
+
+```bash
+configmap/argocd-cm edited...
+```
+
 ---
 
 ### 2. Access the ArgoCD UI
