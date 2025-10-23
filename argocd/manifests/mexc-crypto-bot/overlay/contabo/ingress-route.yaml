@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: mexc-crypto-bot
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`mexc-crypto-bot.vps.jmsola.dev`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: mexc-crypto-bot
+      port: http
+  tls:
+    secretName: mexc-crypto-bot-vps-jmsola-dev-cert-secret
+    

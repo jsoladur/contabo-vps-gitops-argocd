@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mexc-crypto-bot
+  labels:
+    app.kubernetes.io/name: mexc-crypto-bot
+spec: 
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mexc-crypto-bot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mexc-crypto-bot
+    spec:
+      containers:
+        - name: mexc-crypto-bot
+          image: docker.io/josemariasoladuran/mexc-crypto-bot:0.47.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: CORS_ENABLED
+              value: "false"
+            - name: TELEGRAM_BOT_ENABLED
+              value: "true"
+            - name: BACKGROUND_TASKS_ENABLED
+              value: "true"
+            - name: DATABASE_IN_MEMORY
+              value: "false"
+            - name: DATABASE_PATH
+              value: "/app/db/mexc_crypto_bot.sqlite"
+            - name: OPERATING_EXCHANGE
+              value: "mexc"
+            - name: MEXC_API_BASE_URL
+              value: "https://api.mexc.com"
+            - name: AUTHORIZED_GOOGLE_USER_EMAILS_COMMA_SEPARATED
+              value: "josemaria.sola.duran@gmail.com,jmsola3092@gmail.com"
+            - name: GOOGLE_OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-bot
+                  key: google.oauth.client.id
+            - name: GOOGLE_OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-bot
+                  key: google.oauth.client.secret
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-bot
+                  key: telegram.bot.token
+            - name: MEXC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-bot
+                  key: mexc.api.key
+            - name: MEXC_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-bot
+                  key: mexc.api.secret
+          resources:
+            limits:
+              memory: "4Gi"
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /health/status
+              port: 8000
+            initialDelaySeconds: 40    # wait a bit longer before first check
+            timeoutSeconds: 5          # allow more time for the response
+            periodSeconds: 15          # check every 15 seconds
+            failureThreshold: 3        # allow 3 consecutive failures before marking NotReady
+          livenessProbe:
+            httpGet:
+              path: /health/status
+              port: 8000
+            initialDelaySeconds: 60    # wait longer before first liveness check
+            timeoutSeconds: 5
+            periodSeconds: 20
+            failureThreshold: 4        # allow 4 consecutive failures before restarting
+          volumeMounts:
+            - name: sqlite-storage
+              mountPath: /app/db  # <-- SQLite file will go here
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: sqlite-pvc

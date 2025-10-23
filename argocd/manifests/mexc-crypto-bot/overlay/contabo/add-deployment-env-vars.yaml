@@ -1,0 +1,13 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crypto-stop-loss-bot
+spec:
+  template:
+    spec:
+      containers:
+        - name: crypto-stop-loss-bot
+          env:
+            - name: PUBLIC_DOMAIN
+              value: "https://mexc-crypto-bot.vps.jmsola.dev"
