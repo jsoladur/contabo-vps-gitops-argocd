@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mexc-crypto-bot-certificate
+  labels:
+    app.kubernetes.io/name: mexc-crypto-bot-certificate
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-options: Prune=true
+spec:
+  secretName: mexc-crypto-bot-vps-jmsola-dev-cert-secret
+  commonName: "mexc-crypto-bot.vps.jmsola.dev"
+  issuerRef: 
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+    group: cert-manager.io
+  dnsNames:
+    - "mexc-crypto-bot.vps.jmsola.dev"
+  secretTemplate:
+    annotations:
+      reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "mexc-crypto-bot"  # Control destination namespaces
+      reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true" # Auto create reflection for matching namespaces
+      reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "mexc-crypto-bot" # Control auto-reflection namespaces
