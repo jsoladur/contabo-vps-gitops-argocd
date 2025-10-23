@@ -36,8 +36,6 @@ spec:
               value: "/app/db/mexc_crypto_bot.sqlite"
             - name: OPERATING_EXCHANGE
               value: "mexc"
-            - name: MEXC_API_BASE_URL
-              value: "https://api.mexc.com"
             - name: AUTHORIZED_GOOGLE_USER_EMAILS_COMMA_SEPARATED
               value: "josemaria.sola.duran@gmail.com,jmsola3092@gmail.com"
             - name: GOOGLE_OAUTH_CLIENT_ID
@@ -55,6 +53,8 @@ spec:
                 secretKeyRef:
                   name: mexc-crypto-bot
                   key: telegram.bot.token
+            - name: MEXC_API_BASE_URL
+              value: "https://api.mexc.com"
             - name: MEXC_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -67,7 +67,7 @@ spec:
                   key: mexc.api.secret
           resources:
             limits:
-              memory: "4Gi"
+              memory: "2Gi"
             requests:
               memory: "1Gi"
               cpu: "1"
