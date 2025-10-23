@@ -3,6 +3,7 @@ resources:
   - cluster-issuer.yaml
   - root-certificate.yaml
   - crypto-stop-loss-bot-certificate.yaml
+  - mexc-crypto-bot-certificate.yaml
   
 
 
