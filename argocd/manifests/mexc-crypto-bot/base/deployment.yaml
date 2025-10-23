@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-bot
-          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.47.0
+          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.47.1
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -34,8 +34,6 @@ spec:
               value: "false"
             - name: DATABASE_PATH
               value: "/app/db/mexc_crypto_bot.sqlite"
-            - name: OPERATING_EXCHANGE
-              value: "mexc"
             - name: AUTHORIZED_GOOGLE_USER_EMAILS_COMMA_SEPARATED
               value: "josemaria.sola.duran@gmail.com,jmsola3092@gmail.com"
             - name: GOOGLE_OAUTH_CLIENT_ID
@@ -53,6 +51,8 @@ spec:
                 secretKeyRef:
                   name: mexc-crypto-bot
                   key: telegram.bot.token
+            - name: OPERATING_EXCHANGE
+              value: "mexc"
             - name: MEXC_API_BASE_URL
               value: "https://api.mexc.com"
             - name: MEXC_API_KEY
