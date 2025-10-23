@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: mexc-crypto-bot
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -69,8 +69,8 @@ spec:
             limits:
               memory: "2Gi"
             requests:
-              memory: "1Gi"
-              cpu: "1"
+              memory: "256Mi"
+              cpu: "500m"
           readinessProbe:
             httpGet:
               path: /health/status
