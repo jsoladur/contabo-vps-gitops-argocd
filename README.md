@@ -259,8 +259,8 @@ kubectl create secret generic mexc-crypto-bot \
   --from-literal=google.oauth.client.id=${GOOGLE_OAUTH_CLIENT_ID} \
   --from-literal=google.oauth.client.secret=${GOOGLE_OAUTH_CLIENT_SECRET} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
-  --from-literal=mexc.api.key=${BIT2ME_API_KEY} \
-  --from-literal=mexc.api.secret=${BIT2ME_API_SECRET} \
+  --from-literal=mexc.api.key=${MEXC_API_KEY} \
+  --from-literal=mexc.api.secret=${MEXC_API_SECRET} \
   --namespace=mexc-crypto-bot \
   --dry-run=client -o yaml |
 kubeseal \
