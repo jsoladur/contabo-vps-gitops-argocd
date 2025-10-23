@@ -34,6 +34,8 @@ spec:
               value: "false"
             - name: DATABASE_PATH
               value: "/app/db/crypto_stop_loss.sqlite"
+            - name: OPERATING_EXCHANGE
+              value: "bit2me"
             - name: BIT2ME_API_BASE_URL
               value: "https://gateway.bit2me.com"
             - name: AUTHORIZED_GOOGLE_USER_EMAILS_COMMA_SEPARATED
@@ -72,7 +74,7 @@ spec:
                   key: gemini.pro.api.key
           resources:
             limits:
-              memory: "4Gi"
+              memory: "2Gi"
             requests:
               memory: "1Gi"
               cpu: "1"

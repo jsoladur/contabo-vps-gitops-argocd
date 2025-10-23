@@ -16,7 +16,6 @@
     - [4. Install `kubeseal` for Managing Sealed Secrets](#4-install-kubeseal-for-managing-sealed-secrets)
     - [5. Give to `argocd-image-updater` our GitHub credentials](#5-give-to-argocd-image-updater-our-github-credentials)
     - [6. Install `Crypto Stop Loss` application](#6-install-crypto-stop-loss-application)
-  - [🧭 Next Steps](#-next-steps)
   - [🛡️ License](#️-license)
 
 
@@ -247,13 +246,27 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-stop-loss-bot/base/secret.yaml
 ```
 
-It allows to copy at clipboard the output of the encrypted secret. Then, 
+For MEXC:
 
-## 🧭 Next Steps
+```bash
+export GOOGLE_OAUTH_CLIENT_ID=<value>
+export GOOGLE_OAUTH_CLIENT_SECRET=<value>
+export TELEGRAM_BOT_TOKEN=<value>
+export MEXC_API_KEY=<value>
+export MEXC_API_SECRET=<value>
 
-- Configure ArgoCD applications via GitOps.
-- Deploy your side projects into isolated namespaces.
-- Set up monitoring, backups, and TLS certificates (e.g., with Cert-Manager and Let's Encrypt).
+kubectl create secret generic mexc-crypto-bot \
+  --from-literal=google.oauth.client.id=${GOOGLE_OAUTH_CLIENT_ID} \
+  --from-literal=google.oauth.client.secret=${GOOGLE_OAUTH_CLIENT_SECRET} \
+  --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
+  --from-literal=mexc.api.key=${BIT2ME_API_KEY} \
+  --from-literal=mexc.api.secret=${BIT2ME_API_SECRET} \
+  --namespace=mexc-crypto-bot \
+  --dry-run=client -o yaml |
+kubeseal \
+  --format=yaml \
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-bot/base/secret.yaml
+```
 
 ---
 
