@@ -67,10 +67,10 @@ spec:
                   key: mexc.api.secret
           resources:
             limits:
-              memory: "2Gi"
+              memory: "4Gi"
             requests:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "512Mi"
+              cpu: "1"
           readinessProbe:
             httpGet:
               path: /health/status
