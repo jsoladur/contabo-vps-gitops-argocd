@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: crypto-stop-loss-bot
 spec: 
   replicas: 1
-  revisionHistoryLimit: 2
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: crypto-stop-loss-bot
@@ -74,10 +74,11 @@ spec:
                   key: gemini.pro.api.key
           resources:
             limits:
-              memory: "2Gi"
-            requests:
               memory: "256Mi"
               cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
           readinessProbe:
             httpGet:
               path: /health/status
