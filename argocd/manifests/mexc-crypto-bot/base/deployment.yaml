@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: mexc-crypto-bot
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-bot
-          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.47.9
+          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.48.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
