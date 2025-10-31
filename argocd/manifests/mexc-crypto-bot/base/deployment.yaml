@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-bot
-          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.48.2
+          image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.50.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
