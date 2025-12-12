@@ -15,7 +15,8 @@
     - [3. Configure ArgoCD CLI and Deploy a Project](#3-configure-argocd-cli-and-deploy-a-project)
     - [4. Install `kubeseal` for Managing Sealed Secrets](#4-install-kubeseal-for-managing-sealed-secrets)
     - [5. Give to `argocd-image-updater` our GitHub credentials](#5-give-to-argocd-image-updater-our-github-credentials)
-    - [6. Install `Crypto Stop Loss` application](#6-install-crypto-stop-loss-application)
+    - [6. Install `Crypto Spot Bot` application](#6-install-crypto-spot-bot-application)
+    - [6. Install `Crypto Futures Bot` application](#6-install-crypto-futures-bot-application)
   - [🛡️ License](#️-license)
 
 
@@ -220,9 +221,9 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/argocd-image-updater/base/github-creds-secret.yaml
 ```
 
-### 6. Install `Crypto Stop Loss` application
+### 6. Install `Crypto Spot Bot` application
 
-To install Crypto Stop Loss application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+To install Crypto Spot Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
 
 ```bash
 export GOOGLE_OAUTH_CLIENT_ID=<value>
@@ -268,6 +269,29 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-bot/base/secret.yaml
 ```
 
+### 6. Install `Crypto Futures Bot` application
+
+To install Crypto Futures Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+
+```bash
+export ROOT_USER=<value>
+export ROOT_PASSWORD=<value>
+export TELEGRAM_BOT_TOKEN=<value>
+export MEXC_API_KEY=<value>
+export MEXC_API_SECRET=<value>
+
+kubectl create secret generic mexc-crypto-futures-bot \
+  --from-literal=root.user=${ROOT_USER} \
+  --from-literal=root.password=${ROOT_PASSWORD} \
+  --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
+  --from-literal=mexc.api.key=${MEXC_API_KEY} \
+  --from-literal=mexc.api.secret=${MEXC_API_SECRET} \
+  --namespace=mexc-crypto-futures-bot \
+  --dry-run=client -o yaml |
+kubeseal \
+  --format=yaml \
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-futures-bot/base/secret.yaml
+```
 ---
 
 ## 🛡️ License

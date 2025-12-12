@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mexc-crypto-futures-bot
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    # Enable image updater for this application
+    argocd-image-updater.argoproj.io/enable: "false"
+    argocd-image-updater.argoproj.io/update-strategy: semver # to apply for all the images
+    argocd-image-updater.argoproj.io/image-list: docker.io/josemariasoladuran/crypto-futures-bot
+    argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd-image-updater/github-creds
+    argocd-image-updater.argoproj.io/write-back-target: "kustomization:../../base"
+    # Disable automatic updates for specific images
+    # Uncomment the following line to ignore specific image tags
+    # argocd-image-updater.argoproj.io/<image_alias>.ignore-tags: "*"
+  finalizers:
+  - argocd.argoproj.io/resources-finalizer
+spec:
+  project: vps-jmsola-dev-project
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mexc-crypto-futures-bot
+  source: 
+    path: argocd/manifests/mexc-crypto-futures-bot/overlay/contabo
+    repoURL: https://github.com/jsoladur/contabo-vps-gitops-argocd.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

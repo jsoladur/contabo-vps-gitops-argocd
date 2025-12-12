@@ -1,0 +1,8 @@
+resources:
+  - sqlite-pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - secret.yaml
+images:
+  - name: docker.io/josemariasoladuran/crypto-futures-bot
+    newTag: 0.0.2
