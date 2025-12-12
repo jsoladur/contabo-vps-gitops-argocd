@@ -5,4 +5,4 @@ resources:
   - secret.yaml
 images:
   - name: docker.io/josemariasoladuran/crypto-futures-bot
-    newTag: 0.1.0
+    newTag: 0.2.1
