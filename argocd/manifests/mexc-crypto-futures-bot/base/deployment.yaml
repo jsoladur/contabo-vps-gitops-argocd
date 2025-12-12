@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-futures-bot
-          image: docker.io/josemariasoladuran/crypto-futures-bot:0.0.2
+          image: docker.io/josemariasoladuran/crypto-futures-bot:0.0.3
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -29,7 +29,7 @@ spec:
             - name: BACKGROUND_TASKS_ENABLED
               value: "true"
             - name: DATABASE_URL
-              value: "sqlite+aiosqlite:///app/db/crypto_futures_bot.db"
+              value: "sqlite+aiosqlite:////app/db/crypto_futures_bot.db"
             - name: ROOT_USER
               valueFrom:
                 secretKeyRef:
