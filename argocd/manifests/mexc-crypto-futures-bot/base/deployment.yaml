@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: mexc-crypto-futures-bot
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-futures-bot
-          image: docker.io/josemariasoladuran/crypto-futures-bot:0.5.0
+          image: docker.io/josemariasoladuran/crypto-futures-bot:0.5.3
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
