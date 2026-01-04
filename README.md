@@ -279,6 +279,7 @@ export ROOT_PASSWORD=<value>
 export TELEGRAM_BOT_TOKEN=<value>
 export MEXC_API_KEY=<value>
 export MEXC_API_SECRET=<value>
+export MEXC_WEB_AUTH_TOKEN=<value>
 
 kubectl create secret generic mexc-crypto-futures-bot \
   --from-literal=root.user=${ROOT_USER} \
@@ -286,6 +287,7 @@ kubectl create secret generic mexc-crypto-futures-bot \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=mexc.api.key=${MEXC_API_KEY} \
   --from-literal=mexc.api.secret=${MEXC_API_SECRET} \
+  --from-literal=mexc.web.auth.token=${MEXC_WEB_AUTH_TOKEN} \
   --namespace=mexc-crypto-futures-bot \
   --dry-run=client -o yaml |
 kubeseal \
