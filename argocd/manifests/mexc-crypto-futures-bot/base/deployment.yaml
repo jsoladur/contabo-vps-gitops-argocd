@@ -59,6 +59,11 @@ spec:
                 secretKeyRef:
                   name: mexc-crypto-futures-bot
                   key: mexc.api.secret
+            - name: MEXC_WEB_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: mexc-crypto-futures-bot
+                  key: mexc.web.auth.token
           resources:
             limits:
               memory: "2Gi"
