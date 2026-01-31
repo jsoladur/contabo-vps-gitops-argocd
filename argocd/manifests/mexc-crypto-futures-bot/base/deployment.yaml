@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mexc-crypto-futures-bot
-          image: docker.io/josemariasoladuran/crypto-futures-bot:0.11.1
+          image: docker.io/josemariasoladuran/crypto-futures-bot:0.11.2
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
