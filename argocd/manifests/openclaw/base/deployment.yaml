@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: openclaw
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -47,6 +47,10 @@ spec:
               containerPort: 18789
               protocol: TCP
           env:
+            - name: OPENCLAW_GATEWAY_BIND
+              value: "lan"
+            - name: OPENCLAW_GATEWAY_PORT
+              value: "18789"
             - name: GEMINI_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -57,8 +61,8 @@ spec:
             httpGet:
               path: /healthz
               port: 18789
-            failureThreshold: 24
-            periodSeconds: 5
+            failureThreshold: 30
+            periodSeconds: 10
           # 2. Readiness: Verifies OpenClaw is fully initialized before routing traffic
           readinessProbe:
             httpGet:
