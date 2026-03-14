@@ -17,6 +17,7 @@
     - [5. Give to `argocd-image-updater` our GitHub credentials](#5-give-to-argocd-image-updater-our-github-credentials)
     - [6. Install `Crypto Spot Bot` application](#6-install-crypto-spot-bot-application)
     - [6. Install `Crypto Futures Bot` application](#6-install-crypto-futures-bot-application)
+    - [7. Install `OpenClaw` AI assistant](#7-install-openclaw-ai-assistant)
   - [🛡️ License](#️-license)
 
 
@@ -294,6 +295,38 @@ kubeseal \
   --format=yaml \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-futures-bot/base/secret.yaml
 ```
+
+### 7. Install `OpenClaw` AI assistant
+
+To run `Openclaw` application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+
+```bash
+export GEMINI_API_KEY=<value>
+export DASHBOARD_USER=<value>
+export DASHBOARD_PASSWORD=<value>
+
+export HASH_HTPASSWD=$(htpasswd -nb ${DASHBOARD_USER} ${DASHBOARD_PASSWORD})
+
+
+kubectl create secret generic openclaw \
+  --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
+  --namespace=openclaw \
+  --dry-run=client -o yaml | \
+kubeseal \
+  --format=yaml \
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/openclaw-secret.yaml
+
+kubectl create secret generic openclaw-middleware \
+  --from-literal=users="${HASH_HTPASSWD}" \
+  --namespace=openclaw \
+  --dry-run=client -o yaml | \
+kubeseal \
+  --format=yaml \
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/overlays/contabo/middleware-secret.yaml
+
+```
+
+
 ---
 
 ## 🛡️ License
