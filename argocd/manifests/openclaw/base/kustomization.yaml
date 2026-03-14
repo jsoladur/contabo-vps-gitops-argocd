@@ -1,5 +1,5 @@
 resources:
-  # - pvc.yaml
+  - pvc.yaml
   - service.yaml
   - configmap.yaml
   - secret.yaml
