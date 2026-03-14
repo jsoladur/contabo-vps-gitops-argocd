@@ -4,6 +4,7 @@ resources:
   - root-certificate.yaml
   - crypto-stop-loss-bot-certificate.yaml
   - mexc-crypto-bot-certificate.yaml
+  - openclaw-certificate.yaml
   
 
 
