@@ -10,7 +10,7 @@ spec:
     kind: Rule
     services:
     - name: openclaw
-      port: http
+      port: 80 # Swapped from "http" to 80port: http
   tls:
     secretName: openclaw-vps-jmsola-dev-cert-secret
     

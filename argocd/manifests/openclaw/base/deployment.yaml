@@ -52,24 +52,32 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: google.gemini.api.key
+          # 1. Startup: Waits patiently for the app to wake up (max 120s)
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 18789
+            failureThreshold: 24
+            periodSeconds: 5
+          # 2. Readiness: Verifies OpenClaw is fully initialized before routing traffic
           readinessProbe:
             httpGet:
-              path: /
+              path: /readyz # Notice we use the specific readiness endpoint here!
               port: 18789
-            initialDelaySeconds: 10
             periodSeconds: 5
+            failureThreshold: 3
+          # 3. Liveness: Checks periodically to ensure the app hasn't crashed/frozen
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: 18789
-            initialDelaySeconds: 20
             periodSeconds: 10
+            failureThreshold: 3
           resources:
             limits:
-              memory: "2Gi"
-              cpu: "1000m"
+              memory: "4Gi"
             requests:
-              memory: "256Mi"
+              memory: "512Mi"
               cpu: "500m"
           volumeMounts:
             - name: openclaw-files

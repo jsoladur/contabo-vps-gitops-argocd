@@ -6,7 +6,7 @@ data:
   openclaw.json: |
     {
       "gateway": {
-        "bind": "0.0.0.0",
+        "bind": "lan",
         "port": 18789
       }
     }
