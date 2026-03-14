@@ -3,4 +3,4 @@ resources:
   - service.yaml
   - configmap.yaml
   - openclaw-secret.yaml
-  # - deployment.yaml
+  - deployment.yaml
