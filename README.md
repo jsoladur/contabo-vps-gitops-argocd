@@ -302,28 +302,16 @@ To run `Openclaw` application, we have to encrypt the `SealedSecret` properly. T
 
 ```bash
 export GEMINI_API_KEY=<value>
-export DASHBOARD_USER=<value>
-export DASHBOARD_PASSWORD=<value>
-
-export HASH_HTPASSWD=$(htpasswd -nb ${DASHBOARD_USER} ${DASHBOARD_PASSWORD})
-
+export GATEWAY_TOKEN=<value>
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
+  --from-literal=gateway.token=${GATEWAY_TOKEN} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
   --format=yaml \
-  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/openclaw-secret.yaml
-
-kubectl create secret generic openclaw-middleware \
-  --from-literal=users="${HASH_HTPASSWD}" \
-  --namespace=openclaw \
-  --dry-run=client -o yaml | \
-kubeseal \
-  --format=yaml \
-  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/overlays/contabo/middleware-secret.yaml
-
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/secret.yaml
 ```
 
 
