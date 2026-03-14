@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openclaw
+  labels:
+    app.kubernetes.io/name: openclaw
+spec: 
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openclaw
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openclaw
+    spec:
+      terminationGracePeriodSeconds: 30
+      # Pod-level Security
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      # The Init Container guarantees correct permissions on the PVC
+      initContainers:
+        - name: busybox
+          image: busybox:1.36.1
+          command: ["sh", "-c", "chown -R 1000:1000 /app/data"]
+          securityContext:
+            runAsUser: 0 # Runs as root just for this quick task
+          volumeMounts:
+            - name: openclaw-files
+              mountPath: /app/data
+      containers:
+        - name: openclaw
+          image: ghcr.io/openclaw/openclaw:2026.3.13-1
+          imagePullPolicy: IfNotPresent
+          # Container-level Security
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: http
+              containerPort: 18789
+              protocol: TCP
+          env:
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: google.gemini.api.key
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 18789
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 18789
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: openclaw-files
+              mountPath: /app/data
+            - name: tmp-volume
+              mountPath: /tmp
+            - name: config-volume
+              mountPath: /app/openclaw.json
+              subPath: openclaw.json
+      volumes:
+        - name: openclaw-files
+          persistentVolumeClaim:
+            claimName: pvc
+        - name: config-volume
+          configMap:
+            name: openclaw-config
+        - name: tmp-volume
+          emptyDir: {}
