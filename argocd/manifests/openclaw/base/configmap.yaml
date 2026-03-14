@@ -2,11 +2,25 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: openclaw-config
+  namespace: openclaw
 data:
   openclaw.json: |
     {
       "gateway": {
         "bind": "lan",
-        "port": 18789
+        "port": 18789,
+        "auth": {
+          "mode": "token"
+        }
+      },
+      "agents": {
+        "defaults": {
+          "model": {
+            "primary": "gemini/gemini-2.0-flash"
+          }
+        }
+      },
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
       }
     }
