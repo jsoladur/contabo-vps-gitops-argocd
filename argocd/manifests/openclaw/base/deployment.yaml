@@ -4,9 +4,8 @@ metadata:
   name: openclaw
   labels:
     app.kubernetes.io/name: openclaw
-spec: 
-  replicas: 0
-  revisionHistoryLimit: 2
+spec:
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: openclaw
@@ -15,31 +14,17 @@ spec:
       labels:
         app.kubernetes.io/name: openclaw
     spec:
-      # Ensures the PVC permissions match the node user (UID 1000)
       securityContext:
+        runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      
       containers:
         - name: openclaw
           image: ghcr.io/openclaw/openclaw:2026.3.13-1
-          imagePullPolicy: IfNotPresent
-          
-          # Lock down the container, but our volumeMounts below make it safe
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
-          
           ports:
-            - name: http
-              containerPort: 18789
-              protocol: TCP
-          
-          # All the required OpenClaw config in one place
+            - containerPort: 18789
+              name: http
           env:
             - name: GEMINI_API_KEY
               valueFrom:
@@ -51,53 +36,42 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: gateway.token
-            # Fixes Traefik routing
-            - name: OPENCLAW_GATEWAY_BIND
-              value: "lan"
-            - name: OPENCLAW_GATEWAY_PORT
-              value: "18789"
-            # Whitelists your domain to prevent crashes
-            - name: OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS
-              value: '["https://openclaw.vps.jmsola.dev"]'
-          
-          # OpenClaw's actual health endpoints
-          startupProbe:
-            httpGet:
-              path: /healthz
-              port: 18789
-            failureThreshold: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: 18789
-            periodSeconds: 5
-            failureThreshold: 3
+          volumeMounts:
+            - name: config
+              mountPath: /home/node/.openclaw/openclaw.json
+              subPath: openclaw.json
+            - name: state
+              mountPath: /home/node/.openclaw
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           livenessProbe:
             httpGet:
               path: /healthz
               port: 18789
-            periodSeconds: 10
+            initialDelaySeconds: 60
+            periodSeconds: 15
             failureThreshold: 3
-          
-          resources:
-            limits:
-              memory: "2Gi"
-            requests:
-              memory: "256Mi"
-              cpu: "500m"
-          
-          # This is what the ChatGPT template missed! 
-          # We MUST give it writable spaces since the root is read-only.
-          volumeMounts:
-            - name: openclaw-files
-              mountPath: /home/node/.openclaw
-            - name: tmp-volume
-              mountPath: /tmp
-      
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 18789
+            initialDelaySeconds: 15
+            periodSeconds: 5
       volumes:
-        - name: openclaw-files
+        - name: config
+          configMap:
+            name: openclaw-config
+        - name: state
           persistentVolumeClaim:
-            claimName: pvc
-        - name: tmp-volume
-          emptyDir: {}
+            claimName: openclaw-pvc

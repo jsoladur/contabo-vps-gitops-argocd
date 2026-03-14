@@ -3,4 +3,4 @@ resources:
   - service.yaml
   - configmap.yaml
   - secret.yaml
-  # - deployment.yaml
+  - deployment.yaml
