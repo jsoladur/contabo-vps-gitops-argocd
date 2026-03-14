@@ -1,6 +1,6 @@
 resources: 
 - ../../base
-# - ingress-route.yaml
+- ingress-route.yaml
 
 namespace: openclaw
 
