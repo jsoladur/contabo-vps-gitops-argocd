@@ -1,5 +1,5 @@
 resources:
   - pvc.yaml
   - service.yaml
-  # - secret.yaml
+  - openclaw-secret.yaml
   # - deployment.yaml
