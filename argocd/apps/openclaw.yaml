@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openclaw
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+  - argocd.argoproj.io/resources-finalizer
+spec:
+  project: vps-jmsola-dev-project
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openclaw
+  source: 
+    path: argocd/manifests/openclaw/overlay/contabo
+    repoURL: https://github.com/jsoladur/contabo-vps-gitops-argocd.git
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

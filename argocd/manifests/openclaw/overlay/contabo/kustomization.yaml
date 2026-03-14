@@ -1,0 +1,11 @@
+resources: 
+- ../../base
+- ingress-route.yaml
+
+namespace: openclaw
+
+# patches:
+#   - path: add-deployment-env-vars.yaml
+#     target:
+#       kind: Deployment
+#       name: openclaw
