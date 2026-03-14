@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: openclaw
 spec: 
   replicas: 1
-  revisionHistoryLimit: 1
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app.kubernetes.io/name: openclaw
@@ -15,88 +15,89 @@ spec:
       labels:
         app.kubernetes.io/name: openclaw
     spec:
-      terminationGracePeriodSeconds: 30
-      # Pod-level Security
+      # Ensures the PVC permissions match the node user (UID 1000)
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
-      # The Init Container guarantees correct permissions on the PVC
-      initContainers:
-        - name: busybox
-          image: busybox:1.36.1
-          command: ["sh", "-c", "chown -R 1000:1000 /home/node/.openclaw"]
-          securityContext:
-            runAsUser: 0 # Runs as root just for this quick task
-          volumeMounts:
-            - name: openclaw-files
-              mountPath: /home/node/.openclaw
+      
       containers:
         - name: openclaw
           image: ghcr.io/openclaw/openclaw:2026.3.13-1
           imagePullPolicy: IfNotPresent
-          # Container-level Security
+          
+          # Lock down the container, but our volumeMounts below make it safe
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
+          
           ports:
             - name: http
               containerPort: 18789
               protocol: TCP
+          
+          # All the required OpenClaw config in one place
           env:
-            - name: OPENCLAW_GATEWAY_BIND
-              value: "lan"
-            - name: OPENCLAW_GATEWAY_PORT
-              value: "18789"
             - name: GEMINI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: openclaw
                   key: google.gemini.api.key
-          # 1. Startup: Waits patiently for the app to wake up (max 120s)
+            - name: OPENCLAW_GATEWAY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: gateway.token
+            # Fixes Traefik routing
+            - name: OPENCLAW_GATEWAY_BIND
+              value: "lan"
+            - name: OPENCLAW_GATEWAY_PORT
+              value: "18789"
+            # Whitelists your domain to prevent crashes
+            - name: OPENCLAW_GATEWAY_CONTROL_UI_ALLOWED_ORIGINS
+              value: '["https://openclaw.vps.jmsola.dev"]'
+          
+          # OpenClaw's actual health endpoints
           startupProbe:
             httpGet:
               path: /healthz
               port: 18789
             failureThreshold: 30
             periodSeconds: 10
-          # 2. Readiness: Verifies OpenClaw is fully initialized before routing traffic
           readinessProbe:
             httpGet:
-              path: /readyz # Notice we use the specific readiness endpoint here!
+              path: /readyz
               port: 18789
             periodSeconds: 5
             failureThreshold: 3
-          # 3. Liveness: Checks periodically to ensure the app hasn't crashed/frozen
           livenessProbe:
             httpGet:
               path: /healthz
               port: 18789
             periodSeconds: 10
             failureThreshold: 3
+          
           resources:
             limits:
-              memory: "4Gi"
+              memory: "2Gi"
             requests:
-              memory: "512Mi"
+              memory: "256Mi"
               cpu: "500m"
+          
+          # This is what the ChatGPT template missed! 
+          # We MUST give it writable spaces since the root is read-only.
           volumeMounts:
             - name: openclaw-files
               mountPath: /home/node/.openclaw
             - name: tmp-volume
               mountPath: /tmp
-            - name: config-volume
-              mountPath: /app/openclaw.json
-              subPath: openclaw.json
+      
       volumes:
         - name: openclaw-files
           persistentVolumeClaim:
             claimName: pvc
-        - name: config-volume
-          configMap:
-            name: openclaw-config
         - name: tmp-volume
           emptyDir: {}
