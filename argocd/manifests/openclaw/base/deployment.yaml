@@ -52,18 +52,18 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: google.gemini.api.key
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 18789
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 18789
-            initialDelaySeconds: 20
-            periodSeconds: 10
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 18789
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 5
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: 18789
+          #   initialDelaySeconds: 20
+          #   periodSeconds: 10
           resources:
             limits:
               memory: "2Gi"
