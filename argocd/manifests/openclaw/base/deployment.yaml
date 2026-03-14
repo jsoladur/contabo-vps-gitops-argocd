@@ -22,6 +22,7 @@ spec:
       containers:
         - name: openclaw
           image: ghcr.io/openclaw/openclaw:2026.3.13-1
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 18789
               name: http
@@ -42,6 +43,8 @@ spec:
               subPath: openclaw.json
             - name: state
               mountPath: /home/node/.openclaw
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: "500m"
@@ -75,3 +78,5 @@ spec:
         - name: state
           persistentVolumeClaim:
             claimName: openclaw-pvc
+        - name: tmp
+          emptyDir: {}
