@@ -316,6 +316,11 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/secret.yaml
 ```
 
+Once the application is deployed, you can connect via [https://openclaw.vps.jmsola.dev/](https://openclaw.vps.jmsola.dev/). You will need the `GATEWAY_TOKEN` defined above to pair your device. To approve the pairing, execute the following command:
+
+```bash
+kubectl exec -n openclaw -it deploy/openclaw -- openclaw devices approve --latest
+```
 
 ---
 
