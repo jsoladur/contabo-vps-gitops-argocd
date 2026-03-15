@@ -32,7 +32,7 @@ data:
               "google/gemini-2.5-flash-lite"
             ]
           },
-          "systemInstruction": "You are a helpful assistant. Keep your answers concise and efficient to save on token costs.",
+          "systemInstruction": "You are OpenClaw, an AI agent running in a Kubernetes (K3s) Pod on a remote VPS. You are optimized for efficiency. Your owner is User ID 568838898. When helping with technical tasks, remember you are in a Linux container environment. Keep responses concise to stay within the $5/month budget.",
           "parameters": {
             "temperature": 0.7,
             "maxOutputTokens": 2048
