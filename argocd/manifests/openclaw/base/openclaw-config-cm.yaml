@@ -49,9 +49,7 @@ data:
         "telegram": {
           "enabled": true,
           "ackReaction": {
-            "enabled": true,
             "emoji": "✅",
-            "on": "success"
           },
           "dmPolicy": "allowlist",
           "allowFrom": [568838898],
@@ -61,7 +59,6 @@ data:
         "whatsapp": {
           "enabled": true,
           "ackReaction": {
-            "enabled": true,
             "emoji": "👀",
           },
           "dmPolicy": "pairing",
