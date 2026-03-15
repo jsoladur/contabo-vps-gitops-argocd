@@ -24,6 +24,12 @@ data:
           "192.168.0.0/16"
         ]
       },
+      "hooks": {
+        "enabled": true,
+        "token": "${OPENCLAW_HOOK_TOKEN}",
+        "path": "/hooks",
+        "presets": ["gmail"],
+      },
       "agents": {
         "defaults": {
           "userTimezone": "Europe/Madrid",

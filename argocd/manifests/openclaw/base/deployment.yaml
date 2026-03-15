@@ -60,6 +60,11 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: gateway.token
+            - name: OPENCLAW_HOOK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: hooks.token
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:
