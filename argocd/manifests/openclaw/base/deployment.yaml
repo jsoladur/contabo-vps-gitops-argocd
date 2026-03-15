@@ -21,18 +21,42 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       initContainers:
-        - name: install-gogcli
-          image: curlimages/curl:latest
-          command:
-            - sh
-            - -c
-            - |
-              curl -fsSL https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.11.0_linux_amd64.tar.gz \
-                | tar -xz -C /shared-bin gog \
-                && chmod +x /shared-bin/gog
-          volumeMounts:
-            - name: shared-bin
-              mountPath: /shared-bin
+      - name: install-gogcli
+        image: busybox:1.36.1
+        command:
+          - sh
+          - -c
+          - |
+            wget -qO- https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.11.0_linux_amd64.tar.gz \
+              | tar -xz -C /shared-bin gog \
+              && chmod +x /shared-bin/gog
+        volumeMounts:
+          - name: shared-bin
+            mountPath: /shared-bin
+      - name: setup-gog-credentials
+        image: busybox:1.36.1
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p /home/node/.openclaw/.config/gogcli
+            /shared-bin/gog auth credentials /secrets/google_client_secret.json
+        env:
+          - name: XDG_CONFIG_HOME
+            value: "/home/node/.openclaw/.config"
+          - name: HOME
+            value: "/home/node"
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts:
+          - name: shared-bin
+            mountPath: /shared-bin
+          - name: state
+            mountPath: /home/node/.openclaw
+          - name: google-credentials
+            mountPath: /secrets
+            readOnly: true
       containers:
         - name: openclaw
           image: ghcr.io/openclaw/openclaw:2026.3.11
@@ -75,6 +99,10 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: whatsapp.phone.number
+            - name: XDG_CONFIG_HOME
+              value: "/home/node/.openclaw/.config"
+            - name: GOG_ACCOUNT
+              value: "josemaria.sola.duran@gmail.com" 
           volumeMounts:
             # openclaw.json config (read-only from ConfigMap)
             - name: config
@@ -140,6 +168,13 @@ spec:
         - name: state
           persistentVolumeClaim:
             claimName: openclaw-pvc
+        - name: google-credentials
+          secret:
+            secretName: openclaw
+            items:
+              - key: google_client_secret.json
+                path: google_client_secret.json
+            defaultMode: 0400
         - name: shared-bin
           emptyDir: {}
         - name: tmp

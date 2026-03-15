@@ -314,7 +314,7 @@ kubectl create secret generic openclaw \
   --from-literal=hooks.token=${HOOKS_TOKEN} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=whatsapp.phone.number=${WHATSAPP_PHONE_NUMBER} \
-  --from-file=google-credentials.json=${CLIENT_SECRET_FILE_ABS_PATH} \
+  --from-file=google_client_secret.json=${CLIENT_SECRET_FILE_ABS_PATH} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
