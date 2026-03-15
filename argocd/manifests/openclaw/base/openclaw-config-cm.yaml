@@ -31,7 +31,18 @@ data:
             "fallbacks": [
               "google/gemini-2.5-flash-lite"
             ]
-          }
+          },
+          "toolLoop": {
+            "enabled": true,
+            "historySize": 10,
+            "repeatThreshold": 2,
+            "criticalThreshold": 3,
+            "detectorCooldownMs": 5000,
+            "detectors": {
+              "repeatedFailure": true
+            }
+          },
+          "timeout": 60000
         }
       },
       "channels": {

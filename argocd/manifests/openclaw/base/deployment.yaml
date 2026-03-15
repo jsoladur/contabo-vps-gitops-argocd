@@ -92,15 +92,15 @@ spec:
               path: /healthz
               port: 18789
             initialDelaySeconds: 90
-            periodSeconds: 15
-            failureThreshold: 3
+            periodSeconds: 30      # was 15
+            failureThreshold: 3    # 3 × 30s = 90s tolerance
           readinessProbe:
             httpGet:
               path: /healthz
               port: 18789
             initialDelaySeconds: 30
-            periodSeconds: 5
-            failureThreshold: 3
+            periodSeconds: 10      # was 5 — less hammering
+            failureThreshold: 3    # 3 × 10s = 30s before marked unready
       volumes:
         - name: config
           configMap:
