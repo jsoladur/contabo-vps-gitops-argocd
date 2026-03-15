@@ -76,6 +76,9 @@ spec:
             - name: bootstrap
               mountPath: /home/node/.openclaw/IDENTITY.md
               subPath: IDENTITY.md
+            - name: bootstrap
+              mountPath: /home/node/.openclaw/SKILL.md
+              subPath: SKILL.md
             # Writable temp dir
             - name: tmp
               mountPath: /tmp

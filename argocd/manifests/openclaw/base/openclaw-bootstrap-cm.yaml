@@ -93,3 +93,12 @@ data:
     name: Claw
     emoji: 🦞
     vibe: Efficient infra-aware personal assistant. Deployed in k3s on a remote VPS.
+  
+  SKILL.md: |
+    # Core Skills & Directives
+
+    ## WhatsApp Appointment Management
+
+    Monitor my incoming WhatsApp conversations.
+    Whenever you detect a context where I am booking, agreeing to, or scheduling an appointment, proactively send me a message asking if you should add it to my Google Calendar.
+    If I reply 'yes', extract the date, time, and context, and create the event on my Google Calendar.
