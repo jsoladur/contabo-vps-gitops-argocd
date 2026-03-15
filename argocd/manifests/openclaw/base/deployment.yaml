@@ -111,6 +111,11 @@ spec:
               value: "/home/node/.openclaw/.config"
             - name: GOG_ACCOUNT
               value: "josemaria.sola.duran@gmail.com"
+            - name: GOG_KEYRING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: gog.keyring.password
           volumeMounts:
             # openclaw.json config (read-only from ConfigMap)
             - name: config
