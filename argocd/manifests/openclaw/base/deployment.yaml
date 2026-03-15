@@ -105,12 +105,12 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: whatsapp.phone.number
-            - name: GOG_KEYRING_BACKEND
-              value: "file"
             - name: XDG_CONFIG_HOME
               value: "/home/node/.openclaw/.config"
             - name: GOG_ACCOUNT
               value: "josemaria.sola.duran@gmail.com"
+            - name: GOG_KEYRING_BACKEND
+              value: "file"
             - name: GOG_KEYRING_PASSWORD
               valueFrom:
                 secretKeyRef:
