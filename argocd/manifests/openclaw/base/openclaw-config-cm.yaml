@@ -48,7 +48,11 @@ data:
       "channels": {
         "telegram": {
           "enabled": true,
-          "ackReaction": "👀",
+          "ackReaction": {
+            "enabled": true,
+            "emoji": "✅",
+            "on": "success"
+          },
           "dmPolicy": "allowlist",
           "allowFrom": [568838898],
           "groupAllowFrom": [568838898],
@@ -56,7 +60,10 @@ data:
         },
         "whatsapp": {
           "enabled": true,
-          "ackReaction": "👀",
+          "ackReaction": {
+            "enabled": true,
+            "emoji": "👀",
+          },
           "dmPolicy": "pairing",
           "allowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
           "selfChatMode": true,
