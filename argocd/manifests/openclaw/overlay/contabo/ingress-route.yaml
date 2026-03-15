@@ -2,15 +2,13 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: openclaw
+  namespace: openclaw
 spec:
   entryPoints:
     - websecure
   routes:
     - match: Host(`openclaw.vps.jmsola.dev`) && PathPrefix(`/`)
       kind: Rule
-      middlewares:
-        - name: openclaw-ws
-          namespace: openclaw
       services:
         - name: openclaw
           port: 80
