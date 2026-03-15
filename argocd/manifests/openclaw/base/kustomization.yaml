@@ -1,6 +1,7 @@
 resources:
   - pvc.yaml
   - service.yaml
-  - configmap.yaml
+  - openclaw-bootstrap-cm.yaml
+  - openclaw-config-cm.yaml
   - secret.yaml
   - deployment.yaml

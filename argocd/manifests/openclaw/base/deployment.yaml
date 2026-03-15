@@ -51,11 +51,27 @@ spec:
                   name: openclaw
                   key: telegram.bot.token
           volumeMounts:
+            # openclaw.json config (read-only from ConfigMap)
             - name: config
               mountPath: /home/node/.openclaw/openclaw.json
               subPath: openclaw.json
+            # Persistent state (memory, sessions, etc.)
             - name: state
               mountPath: /home/node/.openclaw
+            # Bootstrap identity/context files
+            - name: bootstrap
+              mountPath: /home/node/.openclaw/AGENTS.md
+              subPath: AGENTS.md
+            - name: bootstrap
+              mountPath: /home/node/.openclaw/SOUL.md
+              subPath: SOUL.md
+            - name: bootstrap
+              mountPath: /home/node/.openclaw/USER.md
+              subPath: USER.md
+            - name: bootstrap
+              mountPath: /home/node/.openclaw/IDENTITY.md
+              subPath: IDENTITY.md
+            # Writable temp dir
             - name: tmp
               mountPath: /tmp
           resources:
@@ -89,6 +105,9 @@ spec:
         - name: config
           configMap:
             name: openclaw-config
+        - name: bootstrap
+          configMap:
+            name: openclaw-bootstrap
         - name: state
           persistentVolumeClaim:
             claimName: openclaw-pvc
