@@ -27,7 +27,7 @@ spec:
             - containerPort: 18789
               name: http
           env:
-            - name: GOOGLE_API_KEY
+            - name: GEMINI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: openclaw
