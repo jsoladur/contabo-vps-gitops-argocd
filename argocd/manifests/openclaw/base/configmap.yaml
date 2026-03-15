@@ -29,6 +29,16 @@ data:
           "model": "google/gemini-2.5-flash"
         }
       },
+      channels: {
+          telegram: {
+            enabled: true,
+            dmPolicy: "allowlist",
+            allowFrom: [
+              "568838898"
+            ]
+            groups: { "*": { requireMention: true } },
+          },
+      },
       "logging": {
         "level": "info"
       }

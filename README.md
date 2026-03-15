@@ -303,10 +303,12 @@ To run `Openclaw` application, we have to encrypt the `SealedSecret` properly. T
 ```bash
 export GEMINI_API_KEY=<value>
 export GATEWAY_TOKEN=<value>
+export TELEGRAM_BOT_TOKEN=<value>
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
   --from-literal=gateway.token=${GATEWAY_TOKEN} \
+  --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \

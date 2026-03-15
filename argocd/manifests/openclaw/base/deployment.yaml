@@ -45,6 +45,11 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: gateway.token
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: telegram.bot.token
           volumeMounts:
             - name: config
               mountPath: /home/node/.openclaw/openclaw.json
