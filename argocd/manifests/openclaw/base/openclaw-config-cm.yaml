@@ -59,7 +59,7 @@ data:
           "ackReaction": {
             "emoji": "👀",
           },
-          "dmPolicy": "pairing",
+          "dmPolicy": "allowlist",
           "allowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
           "selfChatMode": true,
           "groupPolicy": "allowlist",
