@@ -1,5 +1,6 @@
 # `vps.jmsola.dev` – Personal Project Hosting Environment
 
+
 - [`vps.jmsola.dev` – Personal Project Hosting Environment](#vpsjmsoladev--personal-project-hosting-environment)
   - [Overview](#overview)
   - [📦 Prerequisites](#-prerequisites)
@@ -18,16 +19,27 @@
     - [6. Install `Crypto Spot Bot` application](#6-install-crypto-spot-bot-application)
     - [6. Install `Crypto Futures Bot` application](#6-install-crypto-futures-bot-application)
     - [7. Install `OpenClaw` AI assistant](#7-install-openclaw-ai-assistant)
+      - [7.1. Prepare Google Cloud OAuth Credentials](#71-prepare-google-cloud-oauth-credentials)
+      - [7.2. Run the OAuth Flow Locally](#72-run-the-oauth-flow-locally)
+      - [7.3. Create the SealedSecret](#73-create-the-sealedsecret)
+      - [7.4. Deploy and Verify](#74-deploy-and-verify)
+      - [7.5. Approve Device Pairing](#75-approve-device-pairing)
+      - [7.6. Re-authorizing (Token Rotation)](#76-re-authorizing-token-rotation)
   - [🛡️ License](#️-license)
+
 
 
 ## Overview
 
+
 This repository documents the setup process for provisioning and managing a personal VPS (`vps.jmsola.dev`) using [K3s](https://k3s.io/) and [ArgoCD](https://argo-cd.readthedocs.io/en/stable/). The goal is to maintain a lightweight, production-ready Kubernetes environment for hosting and deploying personal side projects.
+
 
 ---
 
+
 ## 📦 Prerequisites
+
 
 - A VPS instance with root access (e.g., via SSH).
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) installed locally.
@@ -35,19 +47,26 @@ This repository documents the setup process for provisioning and managing a pers
 - A GitHub Personal Access Token with repo access (for ArgoCD integration).
 - Local `~/.kube` directory for storing Kubernetes config files.
 
+
 ---
+
 
 ## 🚀 Installation
 
+
 ### 1. Connect to the VPS
+
 
 ```bash
 ssh root@vps.jmsola.dev
 ```
 
+
 ---
 
+
 ### 2. Install K3s (Lightweight Kubernetes)
+
 
 Install K3s with custom TLS SANs to support domain and IP access:
 ```bash
@@ -62,7 +81,9 @@ curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="\
 --kubelet-arg container-log-max-files=3" sh -
 ```
 
+
 Open necessary ports for Kubernetes API and HTTP/HTTPS traffic:
+
 
 ```bash
 apt update && apt install -y netfilter-persistent
@@ -74,19 +95,26 @@ iptables -I INPUT -p tcp --dport 6443 -m state --state NEW -j ACCEPT
 netfilter-persistent save
 ```
 
+
 ---
+
 
 ### 3. Configure Remote `kubectl` Access
 
+
 #### 3.1. Export K3s Config File from VPS
 
+
 On the VPS:
+
 
 ```bash
 sudo cat /etc/rancher/k3s/k3s.yaml
 ```
 
+
 Copy the output to your local machine and save it as:
+
 
 ```bash
 ~/.kube/vps.jmsola.dev_k3s-config.yaml
@@ -94,34 +122,46 @@ Copy the output to your local machine and save it as:
 
 #### 3.2. Use KUBECONFIG
 
+
 On your local machine:
+
 
 ```bash
 export KUBECONFIG=$HOME/.kube/vps.jmsola.dev_k3s-config.yaml
 ```
 
+
 You can now run `kubectl` commands against your K3s cluster.
+
 
 ---
 
+
 ## 📥 ArgoCD Installation
 
+
 ### 1. Install ArgoCD on the Cluster
+
 
 ```bash
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
+
 Once ArgoCD has been installed, it is important to apply some tuning stuff in order to avoid heavy CPU usage that is mainly provoked by `ArgoCD` itself, since it uses Kubernetes API so much, which is traduced into a heavy `k3s-server` heavy CPU usage.
 
+
 To avoid it, exec
+
 
 ```bash
 kubectl edit configmap argocd-cm -n argocd
 ```
 
-Then, add under `data:` the following values: 
+
+Then, add under `data:` the following values:
+
 
 ```yaml
 apiVersion: v1
@@ -135,35 +175,48 @@ data:
   timeout.reconciliation.jitter: 60s
 ```
 
-You should see at bash terminal something like: 
+
+You should see at bash terminal something like:
+
 
 ```bash
 configmap/argocd-cm edited...
 ```
 
+
 ---
+
 
 ### 2. Access the ArgoCD UI
 
+
 Retrieve the admin password:
+
 
 ```bash
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d | pbcopy
 ```
 
+
 Port-forward the ArgoCD dashboard locally:
+
 
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
 
-Visit [https://localhost:8080](https://localhost:8080) and log in as `admin` using the password above.
+
+Visit https://localhost:8080 and log in as `admin` using the password above.
+
 
 ---
 
+
 ### 3. Configure ArgoCD CLI and Deploy a Project
 
+
 Install and configure the ArgoCD CLI:
+
 
 ```bash
 brew install argocd
@@ -171,7 +224,9 @@ export ARGOCD_OPTS='--insecure --port-forward-namespace argocd'
 argocd login vps.jmsola.dev
 ```
 
+
 Add your GitHub repository:
+
 
 ```bash
 export GITHUB_USERNAME=jsoladur
@@ -184,19 +239,26 @@ argocd repo add https://github.com/jsoladur/contabo-vps-gitops-argocd.git \
 kubectl apply -f argocd/project.yaml
 ```
 
+
 > ℹ️ You can create a GitHub Personal Access Token [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+
 
 ---
 
+
 ### 4. Install `kubeseal` for Managing Sealed Secrets
 
+
 To support encrypted Kubernetes secrets via the Sealed Secrets controller:
+
 
 ```bash
 brew install kubeseal
 ```
 
-Once you have installed kubeseal, we have to download the private key locally for being able to encrypt/decrypt secrets. 
+
+Once you have installed kubeseal, we have to download the private key locally for being able to encrypt/decrypt secrets.
+
 
 ```bash
 kubeseal \
@@ -206,7 +268,9 @@ kubeseal \
 ```
 
 
+
 ### 5. Give to `argocd-image-updater` our GitHub credentials
+
 
 ```bash
 export GITHUB_USERNAME=jsoladur
@@ -222,9 +286,12 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/argocd-image-updater/base/github-creds-secret.yaml
 ```
 
+
 ### 6. Install `Crypto Spot Bot` application
 
-To install Crypto Spot Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+
+To install Crypto Spot Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands:
+
 
 ```bash
 export GOOGLE_OAUTH_CLIENT_ID=<value>
@@ -248,7 +315,9 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-stop-loss-bot/base/secret.yaml
 ```
 
+
 For MEXC:
+
 
 ```bash
 export GOOGLE_OAUTH_CLIENT_ID=<value>
@@ -270,9 +339,12 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-bot/base/secret.yaml
 ```
 
+
 ### 6. Install `Crypto Futures Bot` application
 
-To install Crypto Futures Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+
+To install Crypto Futures Bot application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands:
+
 
 ```bash
 export ROOT_USER=<value>
@@ -296,9 +368,64 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-futures-bot/base/secret.yaml
 ```
 
+
 ### 7. Install `OpenClaw` AI assistant
 
-To run `Openclaw` application, we have to encrypt the `SealedSecret` properly. Therefore, it's needed to execute the following commands: 
+
+OpenClaw uses [`gogcli`](https://github.com/steipete/gogcli) to access Gmail and Google Calendar on your behalf. Because the pod runs headlessly in Kubernetes, the full Google OAuth flow must be completed **locally first**, and the resulting token keyring must be baked into the `openclaw` SealedSecret alongside the other credentials.
+
+#### 7.1. Prepare Google Cloud OAuth Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services → Credentials**.
+2. Click **Create Credentials → OAuth client ID**.
+3. Set **Application type = Desktop app** — this is required so that `gog` can use its loopback redirect URI (`http://127.0.0.1:<port>`). Using **Web application** will produce a `redirect_uri_mismatch` error.
+4. Download the generated JSON file (e.g. `google_client_secret.json`). Its structure must have a root key `"installed"`:
+   ```json
+   {
+     "installed": {
+       "client_id": "XXXXXXXX.apps.googleusercontent.com",
+       "client_secret": "XXXXXXXX",
+       "redirect_uris": ["http://localhost"],
+       ...
+     }
+   }
+   ```
+5. Go to **APIs & Services → OAuth consent screen → Test users** and add your Gmail address (e.g. `josemaria.sola.duran@gmail.com`). Without this, the OAuth flow will return `Error 403: access_denied`.
+
+> ℹ️ Make sure **Gmail API** and **Google Calendar API** are enabled in your project under **APIs & Services → Enabled APIs**.
+
+#### 7.2. Run the OAuth Flow Locally
+
+Download `gogcli` and complete the interactive OAuth authorization on your local machine. This generates the token keyring file that will be injected into the cluster.
+
+```bash
+# Download gogcli locally
+wget -qO- https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.11.0_linux_amd64.tar.gz \
+  | tar -xz -C /usr/local/bin gog && chmod +x /usr/local/bin/gog
+
+# Use an isolated config directory to avoid polluting your local gog setup
+export XDG_CONFIG_HOME=/tmp/gog-bootstrap
+
+# Register the OAuth client credentials
+gog auth credentials /path/to/google_client_secret.json
+
+# Complete the interactive browser-based OAuth flow
+# A browser window will open — log in and grant access
+gog auth add josemaria.sola.duran@gmail.com --services gmail,calendar
+
+# Verify tokens were stored successfully
+gog auth status
+```
+
+After a successful `gog auth status` you should see `josemaria.sola.duran@gmail.com` listed with `gmail, calendar` scopes active. The token keyring file is now at:
+
+```
+/tmp/gog-bootstrap/gogcli/keyring
+```
+
+#### 7.3. Create the SealedSecret
+
+All credentials — including the OAuth token keyring — are stored in the single `openclaw` secret. Set `GOG_KEYRING_PASSWORD` to the passphrase used (or leave it empty if `gog` did not prompt for one during the flow above).
 
 ```bash
 export GEMINI_API_KEY=<value>
@@ -306,9 +433,6 @@ export GATEWAY_TOKEN=<value>
 export HOOKS_TOKEN=<value>
 export TELEGRAM_BOT_TOKEN=<value>
 export WHATSAPP_PHONE_NUMBER=<value>
-export CLIENT_SECRET_FILE_ABS_PATH=<value>
-export GOG_KEYRING_PASSWORD=<value>
-
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
@@ -316,8 +440,8 @@ kubectl create secret generic openclaw \
   --from-literal=hooks.token=${HOOKS_TOKEN} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=whatsapp.phone.number=${WHATSAPP_PHONE_NUMBER} \
-  --from-file=google_client_secret.json=${CLIENT_SECRET_FILE_ABS_PATH} \
-  --from-literal=gog.keyring.password=${GOG_KEYRING_PASSWORD} \
+  --from-file=google_client_secret.json=/tmp/gog-bootstrap/gogcli/credentials.json \
+  --from-file=gog.keyring.tar.gz=/tmp/gog-keyring.tar.gz \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
@@ -325,14 +449,38 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/secret.yaml
 ```
 
-Once the application is deployed, you can connect via [https://openclaw.vps.jmsola.dev/](https://openclaw.vps.jmsola.dev/). You will need the `GATEWAY_TOKEN` defined above to pair your device. To approve the pairing, execute the following command:
+> ⚠️ The `gog.keyring` file contains your live OAuth refresh token. Treat it with the same sensitivity as a password. Never commit the raw (unsealed) secret YAML to the repository.
+
+#### 7.4. Deploy and Verify
+
+Once ArgoCD syncs the application, verify that the pod sees the tokens correctly:
+
+```bash
+# Watch the rollout
+kubectl rollout status deployment/openclaw -n openclaw
+
+# Verify gog can see the authorized account inside the running pod
+kubectl exec -n openclaw -it deploy/openclaw -- gog auth status
+```
+
+You should see `josemaria.sola.duran@gmail.com` listed as authenticated. The pod will automatically refresh the access token using the stored refresh token — no manual intervention needed after the initial bootstrap.
+
+#### 7.5. Approve Device Pairing
+
+Once the application is deployed, connect via https://openclaw.vps.jmsola.dev/. You will need the `GATEWAY_TOKEN` defined above to pair your device. To approve the pairing, execute:
 
 ```bash
 kubectl exec -n openclaw -it deploy/openclaw -- openclaw devices approve --latest
 ```
 
+#### 7.6. Re-authorizing (Token Rotation)
+
+If tokens ever expire or are revoked (e.g. after revoking access in your Google Account settings), repeat steps **7.2 → 7.3** and push the updated `secret.yaml` to the GitOps repo. ArgoCD will automatically re-sync and roll out the updated secret.
+
 ---
 
+
 ## 🛡️ License
+
 
 This setup is intended for personal use. Feel free to fork and adapt it to suit your own deployment needs.

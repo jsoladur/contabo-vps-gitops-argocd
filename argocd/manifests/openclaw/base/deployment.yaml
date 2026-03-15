@@ -40,12 +40,18 @@ spec:
           - -c
           - |
             mkdir -p /home/node/.openclaw/.config/gogcli
+            # Restore pre-authorized keyring (refresh token lives here)
+            tar -xzf /secrets/gog.keyring.tar.gz \
+              -C /home/node/.openclaw/.config/gogcli/
+            # Register OAuth client credentials for token refresh
             /shared-bin/gog auth credentials /secrets/google_client_secret.json
         env:
           - name: XDG_CONFIG_HOME
             value: "/home/node/.openclaw/.config"
           - name: HOME
             value: "/home/node"
+          - name: GOG_KEYRING_BACKEND
+            value: "file"
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000
@@ -99,10 +105,12 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: whatsapp.phone.number
+            - name: GOG_KEYRING_BACKEND
+              value: "file"
             - name: XDG_CONFIG_HOME
               value: "/home/node/.openclaw/.config"
             - name: GOG_ACCOUNT
-              value: "josemaria.sola.duran@gmail.com" 
+              value: "josemaria.sola.duran@gmail.com"
           volumeMounts:
             # openclaw.json config (read-only from ConfigMap)
             - name: config
@@ -174,6 +182,8 @@ spec:
             items:
               - key: google_client_secret.json
                 path: google_client_secret.json
+              - key: gog.keyring.tar.gz
+                path: gog.keyring.tar.gz
             defaultMode: 0400
         - name: shared-bin
           emptyDir: {}
