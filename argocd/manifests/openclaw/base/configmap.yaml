@@ -26,14 +26,10 @@ data:
       },
       "agents": {
         "defaults": {
-          "model": "gemini/gemini-2.5-flash"
+          "model": "google/gemini-2.5-flash"
         }
       },
       "logging": {
         "level": "info"
-      },
-      "env": {
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
-        "OPENCLAW_GATEWAY_TOKEN": "${OPENCLAW_GATEWAY_TOKEN}"
       }
     }
