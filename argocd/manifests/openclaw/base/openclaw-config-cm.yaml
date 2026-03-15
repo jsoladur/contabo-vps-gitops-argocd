@@ -48,9 +48,7 @@ data:
       "channels": {
         "telegram": {
           "enabled": true,
-          "ackReaction": {
-            "emoji": "✅",
-          },
+          "ackReaction": "👀",
           "dmPolicy": "allowlist",
           "allowFrom": [568838898],
           "groupAllowFrom": [568838898],
