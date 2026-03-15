@@ -21,12 +21,12 @@
     - [7. Install `OpenClaw` AI assistant](#7-install-openclaw-ai-assistant)
       - [7.1. Prepare Google Cloud OAuth Credentials](#71-prepare-google-cloud-oauth-credentials)
       - [7.2. Run the OAuth Flow Locally](#72-run-the-oauth-flow-locally)
-      - [7.3. Create the SealedSecret](#73-create-the-sealedsecret)
-      - [7.4. Deploy and Verify](#74-deploy-and-verify)
-      - [7.5. Approve Device Pairing](#75-approve-device-pairing)
-      - [7.6. Re-authorizing (Token Rotation)](#76-re-authorizing-token-rotation)
+      - [7.3. Bundle the Keyring](#73-bundle-the-keyring)
+      - [7.4. Create the SealedSecret](#74-create-the-sealedsecret)
+      - [7.5. Deploy and Verify](#75-deploy-and-verify)
+      - [7.6. Approve Device Pairing](#76-approve-device-pairing)
+      - [7.7. Re-authorizing (Token Rotation)](#77-re-authorizing-token-rotation)
   - [🛡️ License](#️-license)
-
 
 
 ## Overview
@@ -396,17 +396,19 @@ OpenClaw uses [`gogcli`](https://github.com/steipete/gogcli) to access Gmail and
 
 #### 7.2. Run the OAuth Flow Locally
 
-Download `gogcli` and complete the interactive OAuth authorization on your local machine. This generates the token keyring file that will be injected into the cluster.
+Download `gogcli` and complete the interactive OAuth authorization on your local machine. This generates the token keyring directory that will be injected into the cluster.
 
 ```bash
-# Download gogcli locally
+# Download gogcli locally (macOS/Linux)
 wget -qO- https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.11.0_linux_amd64.tar.gz \
   | tar -xz -C /usr/local/bin gog && chmod +x /usr/local/bin/gog
 
 # Use an isolated config directory to avoid polluting your local gog setup
 export XDG_CONFIG_HOME=/tmp/gog-bootstrap
 
-# Register the OAuth client credentials
+# Register the OAuth client credentials using the original file downloaded from Google Cloud Console
+# Important: use the original google_client_secret.json (with "installed" root key),
+# NOT the credentials.json that gogcli generates internally under /tmp/gog-bootstrap/gogcli/
 gog auth credentials /path/to/google_client_secret.json
 
 # Complete the interactive browser-based OAuth flow
@@ -417,15 +419,34 @@ gog auth add josemaria.sola.duran@gmail.com --services gmail,calendar
 gog auth status
 ```
 
-After a successful `gog auth status` you should see `josemaria.sola.duran@gmail.com` listed with `gmail, calendar` scopes active. The token keyring file is now at:
+After a successful `gog auth status` you should see `josemaria.sola.duran@gmail.com` listed with `gmail, calendar` scopes active. The token keyring is now at:
 
 ```
-/tmp/gog-bootstrap/gogcli/keyring
+/tmp/gog-bootstrap/gogcli/keyring/
+├── token:default:josemaria.sola.duran@gmail.com
+└── token:josemaria.sola.duran@gmail.com
 ```
 
-#### 7.3. Create the SealedSecret
+> ⚠️ **Important:** The keyring is a **directory** containing two token files whose names include colons. Do not try to mount individual files — bundle the whole directory as a tar instead (see next step).
 
-All credentials — including the OAuth token keyring — are stored in the single `openclaw` secret. Set `GOG_KEYRING_PASSWORD` to the passphrase used (or leave it empty if `gog` did not prompt for one during the flow above).
+#### 7.3. Bundle the Keyring
+
+Because the token filenames contain colons (`:`) — which are incompatible with Kubernetes `subPath` mounts — the entire keyring directory must be bundled as a tar archive:
+
+```bash
+tar -czf /tmp/gog-keyring.tar.gz -C /tmp/gog-bootstrap/gogcli keyring
+
+# Verify contents
+tar -tzf /tmp/gog-keyring.tar.gz
+# Expected output:
+# keyring/
+# keyring/token:default:josemaria.sola.duran@gmail.com
+# keyring/token:josemaria.sola.duran@gmail.com
+```
+
+#### 7.4. Create the SealedSecret
+
+All credentials — including the OAuth token keyring tar — are stored in the single `openclaw` secret. Note that `GOOGLE_CLIENT_SECRET_PATH` must point to the **original file downloaded from Google Cloud Console** (the one with the `"installed"` root key), not the `credentials.json` that gogcli generates internally.
 
 ```bash
 export GEMINI_API_KEY=<value>
@@ -433,6 +454,8 @@ export GATEWAY_TOKEN=<value>
 export HOOKS_TOKEN=<value>
 export TELEGRAM_BOT_TOKEN=<value>
 export WHATSAPP_PHONE_NUMBER=<value>
+export GOOGLE_CLIENT_SECRET_PATH=<path/to/original/google_client_secret.json>
+export GOG_KEYRING_TAR_PATH=/tmp/gog-keyring.tar.gz
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
@@ -440,8 +463,8 @@ kubectl create secret generic openclaw \
   --from-literal=hooks.token=${HOOKS_TOKEN} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=whatsapp.phone.number=${WHATSAPP_PHONE_NUMBER} \
-  --from-file=google_client_secret.json=/tmp/gog-bootstrap/gogcli/credentials.json \
-  --from-file=gog.keyring.tar.gz=/tmp/gog-keyring.tar.gz \
+  --from-file=google_client_secret.json=${GOOGLE_CLIENT_SECRET_PATH} \
+  --from-file=gog.keyring.tar.gz=${GOG_KEYRING_TAR_PATH} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
@@ -449,9 +472,15 @@ kubeseal \
   --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/openclaw/base/secret.yaml
 ```
 
-> ⚠️ The `gog.keyring` file contains your live OAuth refresh token. Treat it with the same sensitivity as a password. Never commit the raw (unsealed) secret YAML to the repository.
+> ⚠️ The keyring tar contains your live OAuth refresh token. Treat it with the same sensitivity as a password. Never commit the raw (unsealed) secret YAML to the repository.
 
-#### 7.4. Deploy and Verify
+#### 7.5. Deploy and Verify
+
+The Deployment init container (`setup-gog-credentials`) will automatically:
+1. Extract the keyring tar into `/home/node/.openclaw/.config/gogcli/keyring/`
+2. Register the OAuth client credentials via `gog auth credentials`
+
+The `GOG_KEYRING_BACKEND=file` environment variable (set on both the init container and the main container) ensures gogcli uses the on-disk file keyring rather than attempting to access a system keychain — which does not exist in a container. Access tokens expire every ~1 hour but are **refreshed automatically and silently** using the stored refresh token and the OAuth client credentials — no human interaction or pod restart is ever needed.
 
 Once ArgoCD syncs the application, verify that the pod sees the tokens correctly:
 
@@ -463,9 +492,9 @@ kubectl rollout status deployment/openclaw -n openclaw
 kubectl exec -n openclaw -it deploy/openclaw -- gog auth status
 ```
 
-You should see `josemaria.sola.duran@gmail.com` listed as authenticated. The pod will automatically refresh the access token using the stored refresh token — no manual intervention needed after the initial bootstrap.
+You should see `josemaria.sola.duran@gmail.com` listed as authenticated with `gmail, calendar` scopes.
 
-#### 7.5. Approve Device Pairing
+#### 7.6. Approve Device Pairing
 
 Once the application is deployed, connect via https://openclaw.vps.jmsola.dev/. You will need the `GATEWAY_TOKEN` defined above to pair your device. To approve the pairing, execute:
 
@@ -473,9 +502,15 @@ Once the application is deployed, connect via https://openclaw.vps.jmsola.dev/. 
 kubectl exec -n openclaw -it deploy/openclaw -- openclaw devices approve --latest
 ```
 
-#### 7.6. Re-authorizing (Token Rotation)
+#### 7.7. Re-authorizing (Token Rotation)
 
-If tokens ever expire or are revoked (e.g. after revoking access in your Google Account settings), repeat steps **7.2 → 7.3** and push the updated `secret.yaml` to the GitOps repo. ArgoCD will automatically re-sync and roll out the updated secret.
+The refresh token stored in the keyring is permanent and will not expire under normal usage. The only scenarios requiring re-authorization are:
+
+- You manually revoke OpenClaw's access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions)
+- Google invalidates the token after 6 months of complete inactivity
+- You delete or recreate the OAuth client in Google Cloud Console
+
+In any of these cases, repeat steps **7.2 → 7.4** and push the updated `secret.yaml` to the GitOps repo. ArgoCD will automatically re-sync and roll out the updated secret.
 
 ---
 
