@@ -6,15 +6,6 @@ metadata:
 data:
   openclaw.json: |
     {
-      "identity": {
-        "name": "Claw",
-        theme: "helpful assistant",
-        "emoji": "🦞",
-      },
-      "messages": {
-        "ackReaction": "👀",
-        "ackReactionScope": "group-mentions",
-      },
       "gateway": {
         "bind": "lan",
         "port": 18789,
@@ -41,12 +32,23 @@ data:
             "fallbacks": [
               "google/gemini-2.5-flash-lite"
             ]
-          },
-        }
+          }
+        },
+        "list": [
+          {
+            "id": "main",
+            "identity": {
+              "name": "Claw",
+              "theme": "helpful assistant",
+              "emoji": "🦞",
+            }
+          }
+        ]
       },
       "channels": {
         "telegram": {
           "enabled": true,
+          "ackReaction": "👀",
           "dmPolicy": "allowlist",
           "allowFrom": [568838898],
           "groupAllowFrom": [568838898],
@@ -54,6 +56,7 @@ data:
         },
         "whatsapp": {
           "enabled": true,
+          "ackReaction": "👀",
           "dmPolicy": "pairing",
           "allowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
           "selfChatMode": true,
