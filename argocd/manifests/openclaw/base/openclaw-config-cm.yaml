@@ -42,6 +42,12 @@ data:
             568838898
           ],
           "groups": { "*": { "requireMention": true } }
+        },
+        "whatsapp": {
+          "dmPolicy": "allowlist",
+          "allowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
+          "groupPolicy": "allowlist",
+          "groupAllowFrom": ["${WHATSAPP_PHONE_NUMBER}"]
         }
       },
       "logging": {

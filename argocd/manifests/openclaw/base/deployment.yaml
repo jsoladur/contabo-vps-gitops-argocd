@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: telegram.bot.token
+            - name: WHATSAPP_PHONE_NUMBER
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: whatsapp.phone.number
           volumeMounts:
             # openclaw.json config (read-only from ConfigMap)
             - name: config

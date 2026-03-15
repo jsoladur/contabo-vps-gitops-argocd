@@ -304,11 +304,14 @@ To run `Openclaw` application, we have to encrypt the `SealedSecret` properly. T
 export GEMINI_API_KEY=<value>
 export GATEWAY_TOKEN=<value>
 export TELEGRAM_BOT_TOKEN=<value>
+export WHATSAPP_PHONE_NUMBER=<value>
+
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
   --from-literal=gateway.token=${GATEWAY_TOKEN} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
+  --from-literal=whatsapp.phone.number=${WHATSAPP_PHONE_NUMBER} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
