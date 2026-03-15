@@ -6,11 +6,14 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`openclaw.vps.jmsola.dev`) && PathPrefix(`/`)
-    kind: Rule
-    services:
-    - name: openclaw
-      port: 80 # Swapped from "http" to 80port: http
+    - match: Host(`openclaw.vps.jmsola.dev`) && PathPrefix(`/`)
+      kind: Rule
+      middlewares:
+        - name: openclaw-ws
+          namespace: openclaw
+      services:
+        - name: openclaw
+          port: 80
+          passHostHeader: true
   tls:
     secretName: openclaw-vps-jmsola-dev-cert-secret
-    
