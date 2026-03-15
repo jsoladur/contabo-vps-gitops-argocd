@@ -307,6 +307,8 @@ export HOOKS_TOKEN=<value>
 export TELEGRAM_BOT_TOKEN=<value>
 export WHATSAPP_PHONE_NUMBER=<value>
 export CLIENT_SECRET_FILE_ABS_PATH=<value>
+export GOG_KEYRING_PASSWORD=<value>
+
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
@@ -315,6 +317,7 @@ kubectl create secret generic openclaw \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=whatsapp.phone.number=${WHATSAPP_PHONE_NUMBER} \
   --from-file=google_client_secret.json=${CLIENT_SECRET_FILE_ABS_PATH} \
+  --from-literal=gog.keyring.password=${GOG_KEYRING_PASSWORD} \
   --namespace=openclaw \
   --dry-run=client -o yaml | \
 kubeseal \
