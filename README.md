@@ -268,7 +268,6 @@ kubeseal \
 ```
 
 
-
 ### 5. Give to `argocd-image-updater` our GitHub credentials
 
 
@@ -371,7 +370,6 @@ kubeseal \
 
 ### 7. Install `OpenClaw` AI assistant
 
-
 OpenClaw uses [`gogcli`](https://github.com/steipete/gogcli) to access Gmail and Google Calendar on your behalf. Because the pod runs headlessly in Kubernetes, the full Google OAuth flow must be completed **locally first**, and the resulting token keyring must be baked into the `openclaw` SealedSecret alongside the other credentials.
 
 #### 7.1. Prepare Google Cloud OAuth Credentials
@@ -398,7 +396,7 @@ OpenClaw uses [`gogcli`](https://github.com/steipete/gogcli) to access Gmail and
 
 Download `gogcli` and complete the interactive OAuth authorization on your local machine. This generates the encrypted token keyring directory that will be injected into the cluster.
 
-> ⚠️ **Critical:** The order of these commands matters. You must set `XDG_CONFIG_HOME`, switch the keyring backend to `file`, and export `GOG_KEYRING_PASSWORD` **before** running `gog auth add`. This password encrypts the token files on disk and must be stored in Kubernetes so the pod can decrypt them at runtime.
+> ⚠️ **Critical:** The order of these commands matters. You must set `XDG_CONFIG_HOME`, export `GOG_KEYRING_PASSWORD`, and **only then** switch the keyring backend to `file` via `gog auth keyring file` — this command reads `GOG_KEYRING_PASSWORD` from the environment at the moment it runs and writes it into `config.json`. If the variable is not set beforehand, the keyring will be locked with an empty/default password and the pod will fail to decrypt the tokens at runtime with `aes.KeyUnwrap(): integrity check failed`.
 
 ```bash
 # Download gogcli locally (macOS/Linux)
@@ -409,12 +407,14 @@ wget -qO- https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.
 export XDG_CONFIG_HOME=/tmp/gog-bootstrap
 mkdir -p $XDG_CONFIG_HOME/gogcli
 
-# 2. Switch keyring backend to file (required for headless/container environments)
-gog auth keyring file
-
-# 3. Set a strong passphrase — this encrypts the token files on disk.
-#    Save this value: you will need it in the SealedSecret in step 7.4.
+# 2. Set a strong passphrase FIRST — this encrypts the token files on disk.
+#    Save this value immediately: you will need it in the SealedSecret in step 7.4.
 export GOG_KEYRING_PASSWORD=$(openssl rand -hex 24)
+echo "GOG_KEYRING_PASSWORD=${GOG_KEYRING_PASSWORD}" | tee /tmp/gog-keyring-password.txt
+
+# 3. Switch keyring backend to file AFTER the password is in the environment.
+#    gog reads GOG_KEYRING_PASSWORD at this point and writes it to config.json.
+gog auth keyring file
 
 # 4. Register the OAuth client credentials using the original file downloaded
 #    from Google Cloud Console (must have "installed" root key — NOT the
@@ -459,7 +459,10 @@ tar -tzf /tmp/gog-keyring.tar.gz
 All credentials — including the OAuth token keyring tar and the keyring password — are stored in the single `openclaw` secret.
 
 - `GOOGLE_CLIENT_SECRET_PATH` must point to the **original file downloaded from Google Cloud Console** (the one with the `"installed"` root key), not the `credentials.json` that gogcli generates internally.
-- `GOG_KEYRING_PASSWORD` is the same passphrase you set in step 7.2 — the pod needs it to decrypt the token files at runtime.
+- `GOG_KEYRING_PASSWORD` must be the **exact same passphrase** generated in step 7.2. If you are running this in the same shell session it will still be in your environment. Otherwise, restore it from the file saved in step 7.2:
+  ```bash
+  export GOG_KEYRING_PASSWORD=$(grep GOG_KEYRING_PASSWORD /tmp/gog-keyring-password.txt | cut -d= -f2)
+  ```
 
 ```bash
 export GEMINI_API_KEY=<value>
@@ -469,7 +472,8 @@ export TELEGRAM_BOT_TOKEN=<value>
 export WHATSAPP_PHONE_NUMBER=<value>
 export GOOGLE_CLIENT_SECRET_PATH=<path/to/original/google_client_secret.json>
 export GOG_KEYRING_TAR_PATH=/tmp/gog-keyring.tar.gz
-export GOG_KEYRING_PASSWORD="a-strong-passphrase"   # same value used in step 7.2
+# GOG_KEYRING_PASSWORD must already be set in your environment from step 7.2.
+# If not, restore it: export GOG_KEYRING_PASSWORD=$(grep GOG_KEYRING_PASSWORD /tmp/gog-keyring-password.txt | cut -d= -f2)
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
@@ -536,6 +540,5 @@ In any of these cases, repeat steps **7.2 → 7.4** and push the updated `secret
 
 
 ## 🛡️ License
-
 
 This setup is intended for personal use. Feel free to fork and adapt it to suit your own deployment needs.
