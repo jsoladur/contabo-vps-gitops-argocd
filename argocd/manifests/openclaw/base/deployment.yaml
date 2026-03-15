@@ -37,8 +37,6 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: gateway.token
-            - name: GATEWAY_CONTROLUI_ALLOWEDORIGINS
-              value: "https://openclaw.vps.jmsola.dev"
           volumeMounts:
             - name: config
               mountPath: /home/node/.openclaw/openclaw.json

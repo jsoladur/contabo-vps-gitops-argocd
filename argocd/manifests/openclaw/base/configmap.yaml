@@ -10,17 +10,38 @@ data:
         "bind": "lan",
         "port": 18789,
         "auth": {
-          "mode": "token"
+          "mode": "token",
+          "token": "${OPENCLAW_GATEWAY_TOKEN}"
+        },
+        "controlUi": {
+          "allowedOrigins": [
+            "https://openclaw.vps.jmsola.dev"
+          ]
+        }
+      },
+      "models": {
+        "providers": {
+          "gemini": {
+            "baseUrl": "https://generativelanguage.googleapis.com",
+            "apiKey": "${GEMINI_API_KEY}"
+          }
         }
       },
       "agents": {
         "defaults": {
           "model": {
-            "primary": "gemini/gemini-2.0-flash"
+            "primary": "gemini/gemini-2.5-flash",
+            "fallback": [
+              "gemini/gemini-2.0-flash"
+            ]
           }
         }
       },
+      "logging": {
+        "level": "info"
+      },
       "env": {
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "OPENCLAW_GATEWAY_TOKEN": "${OPENCLAW_GATEWAY_TOKEN}"
       }
     }
