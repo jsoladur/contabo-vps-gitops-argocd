@@ -34,7 +34,7 @@ data:
           "enabled": true,
           "dmPolicy": "allowlist",
           "allowFrom": [
-            "568838898"
+            568838898
           ],
           "groups": { "*": { "requireMention": true } }
         }
