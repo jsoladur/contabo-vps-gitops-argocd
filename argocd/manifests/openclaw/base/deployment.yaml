@@ -20,6 +20,19 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+      initContainers:
+        - name: install-gogcli
+          image: curlimages/curl:latest
+          command:
+            - sh
+            - -c
+            - |
+              curl -fsSL https://github.com/steipete/gogcli/releases/download/v0.11.0/gogcli_0.11.0_linux_amd64.tar.gz \
+                | tar -xz -C /shared-bin gog \
+                && chmod +x /shared-bin/gog
+          volumeMounts:
+            - name: shared-bin
+              mountPath: /shared-bin
       containers:
         - name: openclaw
           image: ghcr.io/openclaw/openclaw:2026.3.11
@@ -30,6 +43,8 @@ spec:
             - containerPort: 18789
               name: http
           env:
+            - name: PATH
+              value: "/shared-bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
             - name: GOOGLE_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -79,6 +94,8 @@ spec:
             - name: bootstrap
               mountPath: /home/node/.openclaw/SKILL.md
               subPath: SKILL.md
+            - name: shared-bin
+              mountPath: /shared-bin
             # Writable temp dir
             - name: tmp
               mountPath: /tmp
@@ -118,5 +135,7 @@ spec:
         - name: state
           persistentVolumeClaim:
             claimName: openclaw-pvc
+        - name: shared-bin
+          emptyDir: {}
         - name: tmp
           emptyDir: {}
