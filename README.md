@@ -466,6 +466,7 @@ All credentials — including the OAuth token keyring tar and the keyring passwo
 
 ```bash
 export GEMINI_API_KEY=<value>
+export OPENROUTER_API_KEY=<value>
 export GATEWAY_TOKEN=<value>
 export HOOKS_TOKEN=<value>
 export TELEGRAM_BOT_TOKEN=<value>
@@ -477,6 +478,7 @@ export GOG_KEYRING_TAR_PATH=/tmp/gog-keyring.tar.gz
 
 kubectl create secret generic openclaw \
   --from-literal=google.gemini.api.key=${GEMINI_API_KEY} \
+  --from-literal=openrouter.api.key=${OPENROUTER_API_KEY} \
   --from-literal=gateway.token=${GATEWAY_TOKEN} \
   --from-literal=hooks.token=${HOOKS_TOKEN} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
