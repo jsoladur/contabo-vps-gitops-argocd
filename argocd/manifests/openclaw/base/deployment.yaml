@@ -85,6 +85,11 @@ spec:
                 secretKeyRef:
                   name: openclaw
                   key: google.gemini.api.key
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openclaw
+                  key: openrouter.api.key
             - name: OPENCLAW_GATEWAY_TOKEN
               valueFrom:
                 secretKeyRef:
