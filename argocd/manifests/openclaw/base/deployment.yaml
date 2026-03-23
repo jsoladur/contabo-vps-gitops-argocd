@@ -65,9 +65,7 @@ spec:
             readOnly: true
       containers:
         - name: openclaw
-          image: ghcr.io/openclaw/openclaw:2026.3.11
-          # XXX: This docker image has a bug related to "pairing device required"
-          # image: ghcr.io/openclaw/openclaw:2026.3.13-1
+          image: ghcr.io/openclaw/openclaw:2026.3.22
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 18789
