@@ -2,7 +2,6 @@ resources:
   - cluster-roles.yaml
   - cluster-issuer.yaml
   - root-certificate.yaml
-  - crypto-stop-loss-bot-certificate.yaml
   - crypto-spot-bot-certificate.yaml
   - openclaw-certificate.yaml
   

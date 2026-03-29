@@ -300,18 +300,18 @@ export BIT2ME_API_KEY=<value>
 export BIT2ME_API_SECRET=<value>
 export GEMINI_PRO_API_KEY=<value>
 
-kubectl create secret generic crypto-stop-loss-bot \
+kubectl create secret generic crypto-spot-bot \
   --from-literal=google.oauth.client.id=${GOOGLE_OAUTH_CLIENT_ID} \
   --from-literal=google.oauth.client.secret=${GOOGLE_OAUTH_CLIENT_SECRET} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=bit2me.api.key=${BIT2ME_API_KEY} \
   --from-literal=bit2me.api.secret=${BIT2ME_API_SECRET} \
   --from-literal=gemini.pro.api.key=${GEMINI_PRO_API_KEY} \
-  --namespace=crypto-stop-loss-bot \
+  --namespace=crypto-spot-bot \
   --dry-run=client -o yaml |
 kubeseal \
   --format=yaml \
-  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-stop-loss-bot/base/secret.yaml
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-spot-bot/base/secret.yaml
 ```
 
 

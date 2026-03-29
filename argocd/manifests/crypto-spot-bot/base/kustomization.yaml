@@ -4,5 +4,5 @@ resources:
   - service.yaml
   - secret.yaml
 images:
-  - name: docker.io/josemariasoladuran/crypto-stop-loss-bot
+  - name: docker.io/josemariasoladuran/crypto-spot-bot
     newTag: 0.52.6
