@@ -18,7 +18,7 @@ The core of the project follows the **"App of Apps" pattern**. A root ArgoCD app
     *   `cert-manager`: For automated TLS certificate management.
     *   `reflector`: To mirror secrets and configmaps across namespaces.
     *   `argocd-image-updater`: To automatically update container images.
-    *   Custom applications like `mexc-crypto-bot`, `mexc-crypto-futures-bot`, and `openclaw`.
+    *   Custom applications like `crypto-spot-bot`, `crypto-futures-bot`, and `openclaw`.
 
 ## Deployment Workflow
 

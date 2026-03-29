@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mexc-crypto-futures-bot
+  name: crypto-futures-bot
   labels:
-    app.kubernetes.io/name: mexc-crypto-futures-bot
+    app.kubernetes.io/name: crypto-futures-bot
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: mexc-crypto-futures-bot
+      app.kubernetes.io/name: crypto-futures-bot
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: mexc-crypto-futures-bot
+        app.kubernetes.io/name: crypto-futures-bot
     spec:
       containers:
-        - name: mexc-crypto-futures-bot
-          image: docker.io/josemariasoladuran/crypto-futures-bot:0.11.4
+        - name: crypto-futures-bot
+          image: docker.io/josemariasoladuran/crypto-futures-bot:0.12.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -33,37 +33,37 @@ spec:
             - name: ROOT_USER
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
+                  name: crypto-futures-bot
                   key: root.user
             - name: ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
+                  name: crypto-futures-bot
                   key: root.password
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
+                  name: crypto-futures-bot
                   key: telegram.bot.token
             - name: FUTURES_EXCHANGE
-              value: "MEXC"
+              value: "BITGET"
             - name: FUTURES_EXCHANGE_DEBUG_MODE
               value: "false"
-            - name: MEXC_API_KEY
+            - name: BITGET_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
-                  key: mexc.api.key
-            - name: MEXC_API_SECRET
+                  name: crypto-futures-bot
+                  key: bitget.api.key
+            - name: BITGET_API_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
-                  key: mexc.api.secret
-            - name: MEXC_WEB_AUTH_TOKEN
+                  name: crypto-futures-bot
+                  key: bitget.api.secret
+            - name: BITGET_API_PASSPHRASE
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-futures-bot
-                  key: mexc.web.auth.token
+                  name: crypto-futures-bot
+                  key: bitget.api.passphrase
           resources:
             limits:
               memory: "2Gi"

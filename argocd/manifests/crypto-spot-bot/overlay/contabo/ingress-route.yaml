@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: crypto-spot-bot
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`crypto-spot-bot.vps.jmsola.dev`) && PathPrefix(`/`)
+    kind: Rule
+    services:
+    - name: crypto-spot-bot
+      port: http
+  tls:
+    secretName: crypto-spot-bot-vps-jmsola-dev-cert-secret
+    

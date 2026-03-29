@@ -2,10 +2,10 @@ resources:
 - ../../base
 - ingress-route.yaml
 
-namespace: mexc-crypto-bot
+namespace: crypto-spot-bot
 
 patches:
   - path: add-deployment-env-vars.yaml
     target:
       kind: Deployment
-      name: mexc-crypto-bot
+      name: crypto-spot-bot

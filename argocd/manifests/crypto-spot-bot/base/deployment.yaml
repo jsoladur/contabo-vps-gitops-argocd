@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mexc-crypto-bot
+  name: crypto-spot-bot
   labels:
-    app.kubernetes.io/name: mexc-crypto-bot
+    app.kubernetes.io/name: crypto-spot-bot
 spec: 
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: mexc-crypto-bot
+      app.kubernetes.io/name: crypto-spot-bot
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: mexc-crypto-bot
+        app.kubernetes.io/name: crypto-spot-bot
     spec:
       containers:
-        - name: mexc-crypto-bot
+        - name: crypto-spot-bot
           image: docker.io/josemariasoladuran/crypto-stop-loss-bot:0.52.6
           imagePullPolicy: IfNotPresent
           ports:
@@ -39,17 +39,17 @@ spec:
             - name: GOOGLE_OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-bot
+                  name: crypto-spot-bot
                   key: google.oauth.client.id
             - name: GOOGLE_OAUTH_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-bot
+                  name: crypto-spot-bot
                   key: google.oauth.client.secret
             - name: TELEGRAM_BOT_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-bot
+                  name: crypto-spot-bot
                   key: telegram.bot.token
             - name: OPERATING_EXCHANGE
               value: "mexc"
@@ -58,12 +58,12 @@ spec:
             - name: MEXC_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-bot
+                  name: crypto-spot-bot
                   key: mexc.api.key
             - name: MEXC_API_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: mexc-crypto-bot
+                  name: crypto-spot-bot
                   key: mexc.api.secret
           resources:
             limits:

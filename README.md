@@ -325,17 +325,17 @@ export TELEGRAM_BOT_TOKEN=<value>
 export MEXC_API_KEY=<value>
 export MEXC_API_SECRET=<value>
 
-kubectl create secret generic mexc-crypto-bot \
+kubectl create secret generic crypto-spot-bot \
   --from-literal=google.oauth.client.id=${GOOGLE_OAUTH_CLIENT_ID} \
   --from-literal=google.oauth.client.secret=${GOOGLE_OAUTH_CLIENT_SECRET} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
   --from-literal=mexc.api.key=${MEXC_API_KEY} \
   --from-literal=mexc.api.secret=${MEXC_API_SECRET} \
-  --namespace=mexc-crypto-bot \
+  --namespace=crypto-spot-bot \
   --dry-run=client -o yaml |
 kubeseal \
   --format=yaml \
-  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-bot/base/secret.yaml
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-spot-bot/base/secret.yaml
 ```
 
 
@@ -349,22 +349,22 @@ To install Crypto Futures Bot application, we have to encrypt the `SealedSecret`
 export ROOT_USER=<value>
 export ROOT_PASSWORD=<value>
 export TELEGRAM_BOT_TOKEN=<value>
-export MEXC_API_KEY=<value>
-export MEXC_API_SECRET=<value>
-export MEXC_WEB_AUTH_TOKEN=<value>
+export BITGET_API_KEY=<value>
+export BITGET_API_SECRET=<value>
+export BITGET_API_PASSPHRASE=<value>
 
-kubectl create secret generic mexc-crypto-futures-bot \
+kubectl create secret generic crypto-futures-bot \
   --from-literal=root.user=${ROOT_USER} \
   --from-literal=root.password=${ROOT_PASSWORD} \
   --from-literal=telegram.bot.token=${TELEGRAM_BOT_TOKEN} \
-  --from-literal=mexc.api.key=${MEXC_API_KEY} \
-  --from-literal=mexc.api.secret=${MEXC_API_SECRET} \
-  --from-literal=mexc.web.auth.token=${MEXC_WEB_AUTH_TOKEN} \
-  --namespace=mexc-crypto-futures-bot \
+  --from-literal=bitget.api.key=${BITGET_API_KEY} \
+  --from-literal=bitget.api.secret=${BITGET_API_SECRET} \
+  --from-literal=bitget.api.passphrase=${BITGET_API_PASSPHRASE} \
+  --namespace=crypto-futures-bot \
   --dry-run=client -o yaml |
 kubeseal \
   --format=yaml \
-  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/mexc-crypto-futures-bot/base/secret.yaml
+  --cert=$HOME/.kube/vps-jmsola-dev-sealed-secrets.cert > ./argocd/manifests/crypto-futures-bot/base/secret.yaml
 ```
 
 
