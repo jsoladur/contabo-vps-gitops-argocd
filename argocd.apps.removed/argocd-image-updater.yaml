@@ -22,7 +22,7 @@ spec:
           config:
             refresh: 60s
       repoURL: https://argoproj.github.io/argo-helm
-      targetRevision: 0.12.2
+      targetRevision: 0.12.3
     - path: argocd/manifests/argocd-image-updater/overlay/contabo
       repoURL: https://github.com/jsoladur/contabo-vps-gitops-argocd.git
       targetRevision: main
