@@ -65,7 +65,7 @@ spec:
             readOnly: true
       containers:
         - name: openclaw
-          image: ghcr.io/openclaw/openclaw:2026.3.28
+          image: ghcr.io/openclaw/openclaw:2026.4.1 
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 18789
@@ -171,9 +171,9 @@ spec:
             httpGet:
               path: /healthz
               port: 18789
-            initialDelaySeconds: 30
-            periodSeconds: 10      # was 5 — less hammering
-            failureThreshold: 3    # 3 × 10s = 30s before marked unready
+            initialDelaySeconds: 60
+            periodSeconds: 15      # was 5 — less hammering
+            failureThreshold: 3    # 3 × 45s = 30s before marked unready
       volumes:
         - name: config
           configMap:
