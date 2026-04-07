@@ -65,7 +65,7 @@ spec:
             readOnly: true
       containers:
         - name: openclaw
-          image: ghcr.io/openclaw/openclaw:2026.3.22
+          image: ghcr.io/openclaw/openclaw:2026.4.5
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 18789

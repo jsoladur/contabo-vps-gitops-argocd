@@ -30,7 +30,7 @@ data:
         ]
       },
       "hooks": {
-        "enabled": true,
+        "enabled": false,
         "token": "${OPENCLAW_HOOK_TOKEN}",
         "path": "/hooks",
         "presets": ["gmail"],
@@ -63,7 +63,7 @@ data:
           "groups": { "*": { "requireMention": true } }
         },
         "whatsapp": {
-          "enabled": true,
+          "enabled": false,
           "ackReaction": {
             "emoji": "👀",
           },
