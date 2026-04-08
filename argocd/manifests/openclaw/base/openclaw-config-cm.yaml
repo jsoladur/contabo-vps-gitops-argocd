@@ -28,17 +28,23 @@ data:
         "enabled": false,
         "token": "${OPENCLAW_HOOK_TOKEN}",
         "path": "/hooks",
-        "presets": ["gmail"],
+        "presets": [
+          "gmail"
+        ]
       },
       "agents": {
         "defaults": {
           "userTimezone": "Europe/Madrid",
           "model": {
-            "primary": "openrouter/qwen/qwen3.6-plus:free",
+            "primary": "openrouter/free",
             "fallbacks": [
-              "google/gemini-3.1-flash-lite-preview",
-              "google/gemini-3.0-flash-lite",
+              "openrouter/nvidia/nemotron-super-49b-v1:free",
+              "openrouter/qwen/qwen3-coder-480b-a35b-instruct:free",
+              "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+              "openrouter/deepseek/deepseek-r1:free",
+              "google/gemini-2.5-flash",
               "google/gemini-2.5-flash-lite"
+              
             ]
           }
         },
@@ -48,7 +54,7 @@ data:
             "identity": {
               "name": "Claw",
               "theme": "helpful assistant",
-              "emoji": "🦞",
+              "emoji": "🦞"
             }
           }
         ]
@@ -58,21 +64,37 @@ data:
           "enabled": true,
           "ackReaction": "👀",
           "dmPolicy": "allowlist",
-          "allowFrom": [568838898],
-          "groupAllowFrom": [568838898],
-          "groups": { "*": { "requireMention": true } }
+          "allowFrom": [
+            568838898
+          ],
+          "groupAllowFrom": [
+            568838898
+          ],
+          "groups": {
+            "*": {
+              "requireMention": true
+            }
+          }
         },
         "whatsapp": {
           "enabled": false,
           "ackReaction": {
-            "emoji": "👀",
+            "emoji": "👀"
           },
           "dmPolicy": "allowlist",
-          "allowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
+          "allowFrom": [
+            "${WHATSAPP_PHONE_NUMBER}"
+          ],
           "selfChatMode": true,
           "groupPolicy": "allowlist",
-          "groupAllowFrom": ["${WHATSAPP_PHONE_NUMBER}"],
-          "groups": { "*": { "requireMention": true } }
+          "groupAllowFrom": [
+            "${WHATSAPP_PHONE_NUMBER}"
+          ],
+          "groups": {
+            "*": {
+              "requireMention": true
+            }
+          }
         }
       },
       "logging": {
