@@ -36,12 +36,10 @@ data:
         "defaults": {
           "userTimezone": "Europe/Madrid",
           "model": {
-            "primary": "openrouter/free",
+            "primary": "openrouter/nvidia/nemotron-super-49b-v1:free",
             "fallbacks": [
-              "openrouter/nvidia/nemotron-super-49b-v1:free",
-              "openrouter/qwen/qwen3-coder-480b-a35b-instruct:free",
-              "openrouter/meta-llama/llama-3.3-70b-instruct:free",
               "openrouter/deepseek/deepseek-r1:free",
+              "openrouter/meta-llama/llama-3.3-70b-instruct:free",
               "google/gemini-2.5-flash",
               "google/gemini-2.5-flash-lite"
               
